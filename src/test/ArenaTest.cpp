@@ -60,27 +60,27 @@ TEST(Arena, Many) {
   std::vector<std::pair<char*, char*> > allocs;
 
   for (size_t i = 3; i < 10; ++i) {
-	for (size_t size = 0; size < 100; ++size) {
-	  char* a = static_cast<char*>(arena.alloc(size));
-	  std::pair<char*, char*> p(a, a + size);
-	  for (size_t j = 0; j < allocs.size(); ++j) {
-		std::pair<char*, char*> p2 = allocs[j];
-		if (p.first <= p2.first)
-		  ASSERT_FALSE(p2.first < p.second);
-		else
-		  ASSERT_FALSE(p.first < p2.second);
-	  }
-	  std::fill(p.first, p.second, static_cast<char>(-1));
-	  allocs.push_back(p);
-	}
+    for (size_t size = 0; size < 100; ++size) {
+      char* a = static_cast<char*>(arena.alloc(size));
+      std::pair<char*, char*> p(a, a + size);
+      for (size_t j = 0; j < allocs.size(); ++j) {
+        std::pair<char*, char*> p2 = allocs[j];
+        if (p.first <= p2.first)
+          ASSERT_FALSE(p2.first < p.second);
+        else
+          ASSERT_FALSE(p.first < p2.second);
+      }
+      std::fill(p.first, p.second, static_cast<char>(-1));
+      allocs.push_back(p);
+    }
 
-	while (allocs.size() > 10 * i) {
-	  arena.freeTop(allocs.back().first);
-	  allocs.pop_back();
-	}
+    while (allocs.size() > 10 * i) {
+      arena.freeTop(allocs.back().first);
+      allocs.pop_back();
+    }
 
-	arena.freeAndAllAfter(allocs[5 * i].first);
-	allocs.resize(5 * i);
+    arena.freeAndAllAfter(allocs[5 * i].first);
+    allocs.resize(5 * i);
   }
   ASSERT_FALSE(arena.isEmpty());
   arena.freeAndAllAfter(allocs.front().first);
@@ -119,27 +119,27 @@ namespace {
   template<class T, size_t ThrowAt>
   class _frobby_Helper {
   public:
-	_frobby_Helper() {
-	  _id = ++_count;
-	  if (_id == ThrowAt) {
-		_log << 'T' << _id;
-		throw _id;
-	  } else
-		_log << '+' << _id;
-	}
+    _frobby_Helper() {
+      _id = ++_count;
+      if (_id == ThrowAt) {
+        _log << 'T' << _id;
+        throw _id;
+      } else
+        _log << '+' << _id;
+    }
 
-	~_frobby_Helper() {
-	  _log << '-' << _id;
-	}
+    ~_frobby_Helper() {
+      _log << '-' << _id;
+    }
 
-	void setId(size_t id) {_id = id;}
+    void setId(size_t id) {_id = id;}
 
-	static std::string getLog() {return _log.str();}
+    static std::string getLog() {return _log.str();}
 
   private:
-	size_t _id;
-	static size_t _count;
-	static std::ostringstream _log;
+    size_t _id;
+    static size_t _count;
+    static std::ostringstream _log;
   };
 
   template<class T, size_t ThrowAt>
@@ -148,9 +148,9 @@ namespace {
   template<class T, size_t ThrowAt>
   std::ostringstream _frobby_Helper<T, ThrowAt>::_log;
 }
-#define MAKE_HELPER(NAME, THROW_AT)										\
-  namespace {															\
-    struct _frobby_##NAME##HelperTag {};								\
+#define MAKE_HELPER(NAME, THROW_AT)                                     \
+  namespace {                                                           \
+    struct _frobby_##NAME##HelperTag {};                                \
     typedef _frobby_Helper<_frobby_##NAME##HelperTag, THROW_AT> NAME##Helper; \
   }
 
@@ -176,7 +176,7 @@ MAKE_HELPER(NoConDecon, 0)
 TEST(Arena, NoConDecon) {
   Arena arena;
   std::pair<NoConDeconHelper*, NoConDeconHelper*> p =
-	arena.allocArrayNoCon<NoConDeconHelper>(3);
+    arena.allocArrayNoCon<NoConDeconHelper>(3);
   p.first[0].setId(1);
   p.first[1].setId(2);
   p.first[2].setId(3);

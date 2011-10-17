@@ -63,32 +63,32 @@ TEST(BufferPool, Grind) {
   std::list<void*> ptrs;
   for (size_t i = 0; i < 10; ++i) {
     for (size_t j = 0; j < 100; ++j)
-	  ptrs.push_back(pool.alloc());
-	// free most but not all and in FIFO order
-	for (size_t j = 0; j < 90; ++j) {
-	  pool.free(ptrs.front());
-	  ptrs.pop_front();
-	}
+      ptrs.push_back(pool.alloc());
+    // free most but not all and in FIFO order
+    for (size_t j = 0; j < 90; ++j) {
+      pool.free(ptrs.front());
+      ptrs.pop_front();
+    }
   }
   // free rest in LIFO order
   while (!ptrs.empty()) {
-	pool.free(ptrs.back());
-	ptrs.pop_back();
-  } 
+    pool.free(ptrs.back());
+    ptrs.pop_back();
+  }
 }
 
 TEST(BufferPool, SmallBuffers) {
   BufferPool pools[] = {1, 2, 3, 4, 5};
   for (size_t i = 0; i < sizeof(pools) / sizeof(BufferPool); ++i) {
-	BufferPool& pool = pools[i];
+    BufferPool& pool = pools[i];
     void* a = pool.alloc();
-	pool.free(a);
+    pool.free(a);
     void* b = pool.alloc();
     void* c = pool.alloc();
     pool.alloc();
-	pool.free(c);
-	for (size_t i = 0; i < 10000; ++i)
-	  pool.alloc();
+    pool.free(c);
+    for (size_t i = 0; i < 10000; ++i)
+      pool.alloc();
     pool.free(b);
   }
 }

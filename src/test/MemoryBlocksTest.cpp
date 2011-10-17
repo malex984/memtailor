@@ -53,7 +53,7 @@ TEST(MemoryBlocks, MemoryUsage) {
 TEST(MemoryBlocks, NoLeak) {
   MemoryBlocks blocks1;
   blocks1.allocBlock(100);
- 
+
   MemoryBlocks blocks2;
   blocks2.allocBlock(100);
   blocks2.allocBlock(1);
@@ -121,4 +121,3 @@ TEST(MemoryBlocks, Properties) {
   blocks.freeAllBlocks();
   ASSERT_TRUE(blocks.getFrontBlock().isNull());
 }
-

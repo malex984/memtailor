@@ -104,7 +104,7 @@ class Arena {
   /** As freeTopArrayAndAllAfter(p.first, p.second). */
   template<class T>
   void freeArrayAndAllAfter(std::pair<T*, T*> p) {
-	freeArrayAndAllAfter(p.first, p.second);
+    freeArrayAndAllAfter(p.first, p.second);
   }
 
   // ***** Miscellaneous *****
@@ -163,13 +163,13 @@ inline void* Arena::alloc(size_t size) {
   const size_t capacity = block().getBytesToRight();
   ASSERT(capacity % MemoryAlignment == 0);
   if (size - 1 >= capacity) {
-	ASSERT(size == 0 || size > capacity);
-	if (size == 0) {
-	  size = 1;
-	  if (capacity > 0)
-	    goto capacityOK;
-	}
-	growCapacity(size);
+    ASSERT(size == 0 || size > capacity);
+    if (size == 0) {
+      size = 1;
+      if (capacity > 0)
+        goto capacityOK;
+    }
+    growCapacity(size);
   }
  capacityOK:
   ASSERT(0 < size);
@@ -196,29 +196,29 @@ inline void Arena::freeTop(void* ptr) {
   if (!block().empty())
     block().setPosition(ptr);
   else
-	freeTopFromOldBlock(ptr);
+    freeTopFromOldBlock(ptr);
 }
 
 inline void Arena::freeAndAllAfter(void* ptr) {
   ASSERT(ptr != 0);
 #ifdef DEBUG
   while (!_debugAllocs.empty() && ptr != _debugAllocs.back())
-	_debugAllocs.pop_back();
+    _debugAllocs.pop_back();
   ASSERT(!_debugAllocs.empty());
   ASSERT(_debugAllocs.back() == ptr);
   _debugAllocs.pop_back();
 #endif
 
   if (block().isInBlock(ptr))
-	block().setPosition(ptr);
+    block().setPosition(ptr);
   else
-	freeAndAllAfterFromOldBlock(ptr);
+    freeAndAllAfterFromOldBlock(ptr);
 }
 
 template<class T>
 std::pair<T*, T*> Arena::allocArrayNoCon(size_t elementCount) {
   if (elementCount > static_cast<size_t>(-1) / sizeof(T))
-	throw std::bad_alloc();
+    throw std::bad_alloc();
   const size_t size = elementCount * sizeof(T);
   ASSERT(size / sizeof(T) == elementCount);
   char* buffer = static_cast<char*>(alloc(size));
@@ -232,12 +232,12 @@ std::pair<T*, T*> Arena::allocArray(size_t elementCount) {
   std::pair<T*, T*> p = allocArrayNoCon<T>(elementCount);
   T* it = p.first;
   try {
-	for (; it != p.second; ++it) {
-	  new (it) T();
+    for (; it != p.second; ++it) {
+      new (it) T();
     }
   } catch (...) {
-	freeTopArray<T>(p.first, it);
-	throw;
+    freeTopArray<T>(p.first, it);
+    throw;
   }
   return p;
 }
@@ -248,8 +248,8 @@ void Arena::freeTopArray(T* array, T* arrayEnd) {
   ASSERT(array <= arrayEnd);
 
   while (arrayEnd != array) {
-	--arrayEnd;
-	arrayEnd->~T();
+    --arrayEnd;
+    arrayEnd->~T();
   }
   freeTop(array);
 }
@@ -260,8 +260,8 @@ void Arena::freeArrayAndAllAfter(T* array, T* arrayEnd) {
   ASSERT(array <= arrayEnd);
 
   while (arrayEnd != array) {
-	--arrayEnd;
-	arrayEnd->~T();
+    --arrayEnd;
+    arrayEnd->~T();
   }
   freeAndAllAfter(array);
 }

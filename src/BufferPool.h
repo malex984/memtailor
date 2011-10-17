@@ -69,7 +69,7 @@ inline void* BufferPool::alloc() {
   void* ptr;
   if (_free != 0) {
     ptr = _free;
-	_free = _free->next;
+    _free = _free->next;
   } else {
     if (block().position() == block().end())
       growCapacity();

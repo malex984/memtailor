@@ -16,7 +16,7 @@ Arena::~Arena() {
 
 void Arena::freeAllAllocs() {
   while (block().hasPreviousBlock())
-	_blocks.freePreviousBlock();
+    _blocks.freePreviousBlock();
   block().clear();
 }
 
@@ -31,7 +31,7 @@ void Arena::growCapacity(const size_t needed) {
   // ** Calcuate size of block (doubles capacity)
   size_t size = std::max(needed, block().getBytesInBlock());
   if (size > std::numeric_limits<size_t>::max() / 2)
-	throw std::bad_alloc(); // size * 2 overflows
+    throw std::bad_alloc(); // size * 2 overflows
   size *= 2;
   const size_t minimumAlloc = 16 * 1024 - sizeof(Block) - 16;
   size = std::max(size, minimumAlloc); // avoid many small blocks
@@ -51,7 +51,7 @@ void Arena::freeTopFromOldBlock(void* ptr) {
   ASSERT(previous->isInBlock(ptr));
   previous->setPosition(ptr);
   if (previous->empty())
-	_blocks.freePreviousBlock();
+    _blocks.freePreviousBlock();
 }
 
 void Arena::freeAndAllAfterFromOldBlock(void* ptr) {
@@ -60,12 +60,12 @@ void Arena::freeAndAllAfterFromOldBlock(void* ptr) {
 
   block().setPosition(block().begin());
   while (!(block().getPreviousBlock()->isInBlock(ptr))) {
-	_blocks.freePreviousBlock();
-	ASSERT(block().hasPreviousBlock()); // ptr must be in some block
+    _blocks.freePreviousBlock();
+    ASSERT(block().hasPreviousBlock()); // ptr must be in some block
   }
 
   ASSERT(block().getPreviousBlock()->isInBlock(ptr));
   block().getPreviousBlock()->setPosition(ptr);
   if (block().getPreviousBlock()->empty())
-	_blocks.freePreviousBlock();
+    _blocks.freePreviousBlock();
 }

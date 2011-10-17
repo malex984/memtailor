@@ -11,7 +11,7 @@
 class MemoryBlocks {
  public:
    class Block;
-   
+
    /** Makes the front block a null block object. No memory is
    allocated. */
   MemoryBlocks() {}
@@ -65,63 +65,63 @@ class MemoryBlocks {
    handled by MemoryBlocks. */
   class Block {
   public:
-	char* begin() {return _begin;}
-	char* const begin() const {return _begin;}
-	char* end() {return _end;}
-	char* const end() const {return _end;}
+    char* begin() {return _begin;}
+    char* const begin() const {return _begin;}
+    char* end() {return _end;}
+    char* const end() const {return _end;}
     char* position() {return _position;}
     char const* position() const {return _position;}
-	inline void setPosition(const void* position);
+    inline void setPosition(const void* position);
 
-	/** Returns true if ptr is in the range [begin(), end()). */
-	inline bool isInBlock(const void* ptr) const;
+    /** Returns true if ptr is in the range [begin(), end()). */
+    inline bool isInBlock(const void* ptr) const;
 
-	/** Returns the number of bytes in the range [begin(), end()). */
-	size_t getBytesInBlock() const {return _end - _begin;}
+    /** Returns the number of bytes in the range [begin(), end()). */
+    size_t getBytesInBlock() const {return _end - _begin;}
 
-	/** Returns the number of bytes in the range [position(), end()). */
-	size_t getBytesToRight() const {return _end - _position;}
+    /** Returns the number of bytes in the range [position(), end()). */
+    size_t getBytesToRight() const {return _end - _position;}
 
-	/** Returns true if position() == begin(). */
-	bool empty() const {return position() == begin();}
+    /** Returns true if position() == begin(). */
+    bool empty() const {return position() == begin();}
 
     Block* getPreviousBlock() {return _previous;}
     Block const* getPreviousBlock() const {return _previous;}
 
-	/** Returns true if previous() is not null. */
-	bool hasPreviousBlock() const {return _previous != 0;}
+    /** Returns true if previous() is not null. */
+    bool hasPreviousBlock() const {return _previous != 0;}
 
-	/** Returns true this is a null block object. That is, if begin(),
-		end() and position() are all null. */
-	bool isNull() const {return begin() == 0;}
+    /** Returns true this is a null block object. That is, if begin(),
+        end() and position() are all null. */
+    bool isNull() const {return begin() == 0;}
 
-	/** Sets position to begin(). */
+    /** Sets position to begin(). */
     void clear() {setPosition(begin());}
 
   private:
     friend class MemoryBlocks;
-	Block() {makeNull();} 
+    Block() {makeNull();}
     Block(size_t capacity, Block* previous);
-	Block(Block const&); // unavailable
-	void operator=(Block const&); // unavailable
+    Block(Block const&); // unavailable
+    void operator=(Block const&); // unavailable
 
-	/** Makes this a null block object. Does NOT free the owned memory! */
-	void makeNull();
+    /** Makes this a null block object. Does NOT free the owned memory! */
+    void makeNull();
 
-	/** Frees the memory for this block. */
-	void free() {delete[] begin();}
+    /** Frees the memory for this block. */
+    void free() {delete[] begin();}
 
-	/** Frees the memory for the previous block. */
-	void freePrevious();
+    /** Frees the memory for the previous block. */
+    void freePrevious();
 
-	/** Makes new memory for this block and puts the old memory in a
-		block previous to this block. */
-	void newBlock(size_t capacity);
+    /** Makes new memory for this block and puts the old memory in a
+        block previous to this block. */
+    void newBlock(size_t capacity);
 
-	char* _begin; /// beginning of current block (aligned)
-	char* _position; /// pointer to first free byte (aligned)
-	char* _end; /// one past last byte (aligned)
-	Block* _previous; /// null if no previous block
+    char* _begin; /// beginning of current block (aligned)
+    char* _position; /// pointer to first free byte (aligned)
+    char* _end; /// one past last byte (aligned)
+    Block* _previous; /// null if no previous block
   };
 
  private:
@@ -163,7 +163,7 @@ inline size_t MemoryBlocks::alignThrowOnOverflow(size_t value) {
   // MemoryAlignment is a power of 2.
   const size_t sum = value + decAlign;
   if (sum < value)
-	throw std::bad_alloc(); // overflow
+    throw std::bad_alloc(); // overflow
   const size_t aligned = sum & (~decAlign);
 
   ASSERT(aligned % MemoryAlignment == 0); // alignment

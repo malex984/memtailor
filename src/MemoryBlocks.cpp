@@ -5,7 +5,7 @@
 
 void MemoryBlocks::freeAllPreviousBlocks() {
   while (_block.hasPreviousBlock())
-	freePreviousBlock();
+    freePreviousBlock();
 }
 
 void MemoryBlocks::freeAllBlocks() {
@@ -16,15 +16,15 @@ void MemoryBlocks::freeAllBlocks() {
 
 void MemoryBlocks::Block::newBlock(size_t capacityInBytes) {
   if (!isNull()) {
-	// We set aside space for a block at the end of the memory. Use that
-	// space to store the block for the old memory.
+    // We set aside space for a block at the end of the memory. Use that
+    // space to store the block for the old memory.
     const size_t blockStructOffset = alignNoOverflow(getBytesInBlock());
-	Block* block = reinterpret_cast<Block*>(begin() + blockStructOffset);
-	block->_previous = this->getPreviousBlock();
-	block->_begin = begin();
-	block->_end = end();
-	block->_position = position();
-	_previous = block;
+    Block* block = reinterpret_cast<Block*>(begin() + blockStructOffset);
+    block->_previous = this->getPreviousBlock();
+    block->_begin = begin();
+    block->_end = end();
+    block->_position = position();
+    _previous = block;
   }
 
   // make space for block information at end of new memory, but do not
@@ -32,7 +32,7 @@ void MemoryBlocks::Block::newBlock(size_t capacityInBytes) {
   const size_t aligned = alignThrowOnOverflow(capacityInBytes);
   const size_t total = aligned + sizeof(Block);
   if (total < aligned) // check overflow
-	throw std::bad_alloc();
+    throw std::bad_alloc();
   _begin = new char[total];
   _position = _begin;
   _end = _begin + capacityInBytes;
