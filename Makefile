@@ -12,9 +12,9 @@ ifndef CXX
   CXX = "g++"
 endif
 
-cflags = $(CFLAGS) $(CPPFLAGS) -Wall -pedantic -I $(GMP_INC_DIR) \
+cflags = $(CFLAGS) $(CPPFLAGS) -Wall \
          -Wno-uninitialized -Wno-unused-parameter \
-         -isystem $(GTEST_DIR)/include -Isrc/
+         -isystem $(GTEST_DIR)include -Isrc/
 library = libspecalloc.a
 GTEST_VERSION = 1.6.0
 GTEST_DIR = bin/gtest/
@@ -24,7 +24,7 @@ ifndef MODE
 endif
 
 ifndef ldflags
-  ldflags = $(cflags) $(LDFLAGS) -lgmpxx -lgmp
+  ldflags = $(cflags) $(LDFLAGS)
 endif
 
 MATCH=false
@@ -101,7 +101,7 @@ $(outdir)stdinc.h.gch: src/stdinc.h
 $(outdir)%.o: src/%.cpp $(outdir)stdinc.h.gch
 	@echo Compiling $<
 	@mkdir -p $(dir $@)
-	$(CXX) ${cflags} -MMD -c $< -o $@ -include $(outdir)stdinc.h
+	@$(CXX) ${cflags} -MMD -c $< -o $@ -include $(outdir)stdinc.h
 	@sed -e 's/.*://' -e 's/\\$$//' < $(@:.o=.d) | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $(@:.o=.d)
 ifeq ($(MODE), analysis) # to allow dependency analysis to work

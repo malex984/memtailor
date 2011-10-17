@@ -66,9 +66,9 @@ class MemoryBlocks {
   class Block {
   public:
     char* begin() {return _begin;}
-    char* const begin() const {return _begin;}
+    char const* begin() const {return _begin;}
     char* end() {return _end;}
-    char* const end() const {return _end;}
+    char const* end() const {return _end;}
     char* position() {return _position;}
     char const* position() const {return _position;}
     inline void setPosition(const void* position);

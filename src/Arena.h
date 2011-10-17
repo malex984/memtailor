@@ -69,6 +69,41 @@ class Arena {
    backing memory. */
   void freeAllAllocsAndBackingMemory();
 
+  // ***** Object interface *****
+
+  /** Allocates and default constructs an instance of T.
+   Only default construction supported. */
+  template<class T>
+  T* allocObject() {
+    return new (allocObjectNoCon<T>()) T();
+  }
+
+  /** Allocates memory for an instance of T. No construction
+   is performed. */
+  template<class T>
+  void* allocObjectNoCon() {
+    return alloc(sizeof(T));
+  }
+
+  /** Destructs *ptr and then frees it as a memory buffer.
+   That buffer must be the most recently allocated buffer from
+   this Arena that has not yet been freed. Double frees are not
+   allowed. ptr must not be null. */
+  template<class T>
+  void freeTopObject(T* ptr) {
+    ptr->~T();
+    freeTop(ptr);
+  }
+
+  /** Destructs *ptr and then frees it as a memory buffer
+   along with all not yet freed allocations that have happened
+   since that buffer was allocated. ptr must not be null. */
+  template<class T>
+  void freeObjectAndAllAfter(T* ptr) {
+    ptr->~T();
+    freeAndAllAfter(ptr);
+  }
+
   // ***** Array interface *****
 
   /** As alloc(elementCount * sizeof(T)). Constructors for the
@@ -143,7 +178,7 @@ class Arena {
 
   MemoryBlocks _blocks;
 #ifdef DEBUG
-  std::vector<void*> _debugAllocs;)
+  std::vector<void*> _debugAllocs;
 #endif
 
   static Arena _scratchArena;
@@ -180,7 +215,7 @@ inline void* Arena::alloc(size_t size) {
   block().setPosition(ptr + MemoryBlocks::alignNoOverflow(size));
 
 #ifdef DEBUG
-  _debugAllocs.push_back(ptr));
+  _debugAllocs.push_back(ptr);
 #endif
   return ptr;
 }

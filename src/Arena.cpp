@@ -23,7 +23,7 @@ void Arena::freeAllAllocs() {
 void Arena::freeAllAllocsAndBackingMemory() {
   _blocks.freeAllBlocks();
 #ifdef DEBUG
-  _debugAllocs.swap(std::vector<void*>());
+  std::vector<void*>().swap(_debugAllocs);
 #endif
 }
 
