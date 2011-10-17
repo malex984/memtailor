@@ -1,0 +1,16 @@
+syntax: glob
+*~
+._*
+data
+frobby.lnk
+*.stackdump
+core
+*.orig
+4ti2/*
+disttmp
+tmp
+sage
+ex/
+ideals/
+bin/
+tmp/
