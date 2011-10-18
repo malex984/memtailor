@@ -20,7 +20,7 @@ namespace SpecAlloc {
     size_t size = block().getBytesInBlock();
     if (size == 0) {
       // start out at 10 buffers
-      SPECALLOC_ASSERT(block().isNull());
+      MEMT_ASSERT(block().isNull());
       if (_bufferSize > std::numeric_limits<size_t>::max() / 10)
         throw std::bad_alloc(); // _bufferSize * 10 overflows
       size = _bufferSize * 10;
@@ -32,8 +32,8 @@ namespace SpecAlloc {
     }
 
     // ** Allocate next block
-    SPECALLOC_ASSERT(MemoryBlocks::alignNoOverflow(size) == size);
-    SPECALLOC_ASSERT(size > block().getBytesInBlock());
+    MEMT_ASSERT(MemoryBlocks::alignNoOverflow(size) == size);
+    MEMT_ASSERT(size > block().getBytesInBlock());
     _blocks.allocBlock(size);
   }
 

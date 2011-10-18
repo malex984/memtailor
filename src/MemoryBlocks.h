@@ -1,7 +1,7 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    Distributed under the Modified BSD License. See license.txt. */
-#ifndef SPECALLOC_MEMORY_BLOCKS_GUARD
-#define SPECALLOC_MEMORY_BLOCKS_GUARD
+#ifndef MEMT_MEMORY_BLOCKS_GUARD
+#define MEMT_MEMORY_BLOCKS_GUARD
 
 #include <new> // for std::bad_alloc
 #include <cstddef> // for size_t
@@ -136,7 +136,7 @@ namespace SpecAlloc {
   }
 
   inline void MemoryBlocks::Block::setPosition(void const* position) {
-    SPECALLOC_ASSERT(position == end() || isInBlock(position));
+    MEMT_ASSERT(position == end() || isInBlock(position));
     _position = const_cast<char*>(reinterpret_cast<char const*>(position));
   }
 
@@ -145,13 +145,13 @@ namespace SpecAlloc {
     // one addition and one bitwise and.
     const size_t decAlign = MemoryAlignment - 1; // compile time constant
 
-    SPECALLOC_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
+    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
       // This works because MemoryAlignment is a power of 2.
       const size_t aligned = (value + decAlign) & (~decAlign);
 
-    SPECALLOC_ASSERT(aligned % MemoryAlignment == 0); // alignment
-    SPECALLOC_ASSERT(aligned >= value); // no overflow
-    SPECALLOC_ASSERT(aligned - value < MemoryAlignment); // adjustment minimal
+    MEMT_ASSERT(aligned % MemoryAlignment == 0); // alignment
+    MEMT_ASSERT(aligned >= value); // no overflow
+    MEMT_ASSERT(aligned - value < MemoryAlignment); // adjustment minimal
     return aligned;
   }
 
@@ -160,7 +160,7 @@ namespace SpecAlloc {
     // one addition, one branch using a comparison and one bitwise and.
     const size_t decAlign = MemoryAlignment - 1; // compile time constant
 
-    SPECALLOC_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
+    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
       // This sum overflows if and only if rounding up overflows because
       // MemoryAlignment is a power of 2.
       const size_t sum = value + decAlign;
@@ -168,9 +168,9 @@ namespace SpecAlloc {
       throw std::bad_alloc(); // overflow
     const size_t aligned = sum & (~decAlign);
 
-    SPECALLOC_ASSERT(aligned % MemoryAlignment == 0); // alignment
-    SPECALLOC_ASSERT(aligned >= value); // no overflow
-    SPECALLOC_ASSERT(aligned - value < MemoryAlignment); // adjustment minimal
+    MEMT_ASSERT(aligned % MemoryAlignment == 0); // alignment
+    MEMT_ASSERT(aligned >= value); // no overflow
+    MEMT_ASSERT(aligned - value < MemoryAlignment); // adjustment minimal
     return aligned;
   }
 
@@ -180,7 +180,7 @@ namespace SpecAlloc {
     const char* p = static_cast<const char*>(ptr);
     const size_t offset = static_cast<size_t>(p - begin());
     // if _blockBegin > ptr then offset overflows to a large integer
-    SPECALLOC_ASSERT((offset < getBytesInBlock()) == (begin() <= p && p < end()));
+    MEMT_ASSERT((offset < getBytesInBlock()) == (begin() <= p && p < end()));
     return offset < getBytesInBlock();
   }
 }

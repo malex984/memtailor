@@ -22,7 +22,7 @@ namespace SpecAlloc {
 
   void Arena::freeAllAllocsAndBackingMemory() {
     _blocks.freeAllBlocks();
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
     std::vector<void*>().swap(_debugAllocs);
 #endif
   }
@@ -37,34 +37,34 @@ namespace SpecAlloc {
     size = std::max(size, minimumAlloc); // avoid many small blocks
     size = MemoryBlocks::alignThrowOnOverflow(size);
 
-    SPECALLOC_ASSERT(size >= needed);
-    SPECALLOC_ASSERT(size % MemoryAlignment == 0);
+    MEMT_ASSERT(size >= needed);
+    MEMT_ASSERT(size % MemoryAlignment == 0);
     _blocks.allocBlock(size);
   }
 
   void Arena::freeTopFromOldBlock(void* ptr) {
-    SPECALLOC_ASSERT(ptr != 0);
-    SPECALLOC_ASSERT(block().empty());
-    SPECALLOC_ASSERT(block().hasPreviousBlock());
+    MEMT_ASSERT(ptr != 0);
+    MEMT_ASSERT(block().empty());
+    MEMT_ASSERT(block().hasPreviousBlock());
 
     Block* previous = block().getPreviousBlock();
-    SPECALLOC_ASSERT(previous->isInBlock(ptr));
+    MEMT_ASSERT(previous->isInBlock(ptr));
     previous->setPosition(ptr);
     if (previous->empty())
       _blocks.freePreviousBlock();
   }
 
   void Arena::freeAndAllAfterFromOldBlock(void* ptr) {
-    SPECALLOC_ASSERT(!block().isInBlock(ptr));
-    SPECALLOC_ASSERT(block().getPreviousBlock() != 0);
+    MEMT_ASSERT(!block().isInBlock(ptr));
+    MEMT_ASSERT(block().getPreviousBlock() != 0);
 
     block().setPosition(block().begin());
     while (!(block().getPreviousBlock()->isInBlock(ptr))) {
       _blocks.freePreviousBlock();
-      SPECALLOC_ASSERT(block().hasPreviousBlock()); // ptr must be in some block
+      MEMT_ASSERT(block().hasPreviousBlock()); // ptr must be in some block
     }
 
-    SPECALLOC_ASSERT(block().getPreviousBlock()->isInBlock(ptr));
+    MEMT_ASSERT(block().getPreviousBlock()->isInBlock(ptr));
     block().getPreviousBlock()->setPosition(ptr);
     if (block().getPreviousBlock()->empty())
       _blocks.freePreviousBlock();

@@ -1,18 +1,18 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    Distributed under the Modified BSD License. See license.txt. */
 
-#ifndef SPECALLOC_STDINC_GUARD
-#define SPECALLOC_STDINC_GUARD
+#ifndef MEMT_STDINC_GUARD
+#define MEMT_STDINC_GUARD
 
 #if defined DEBUG || defined _DEBUG
-#define SPECALLOC_DEBUG
+#define MEMT_DEBUG
 #include <cassert>
-#define SPECALLOC_ASSERT(X) ::assert(X);
+#define MEMT_ASSERT(X) ::assert(X);
 #endif
 #endif
 
-#ifndef SPECALLOC_ASSERT
-#define SPECALLOC_ASSERT(X)
+#ifndef MEMT_ASSERT
+#define MEMT_ASSERT(X)
 #endif
 
 /// The alignment that memory allocators must ensure. In other words

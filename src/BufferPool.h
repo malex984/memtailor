@@ -1,7 +1,7 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    Distributed under the Modified BSD License. See license.txt. */
-#ifndef SPECALLOC_OBJECT_POOL_GUARD
-#define SPECALLOC_OBJECT_POOL_GUARD
+#ifndef MEMT_OBJECT_POOL_GUARD
+#define MEMT_OBJECT_POOL_GUARD
 
 #include "MemoryBlocks.h"
 #include <cstddef>

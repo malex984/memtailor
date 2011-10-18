@@ -1,7 +1,7 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    Distributed under the Modified BSD License. See license.txt. */
-#ifndef SPECALLOC_ARENA_GUARD
-#define SPECALLOC_ARENA_GUARD
+#ifndef MEMT_ARENA_GUARD
+#define MEMT_ARENA_GUARD
 
 #include "MemoryBlocks.h"
 #include "stdinc.h"
@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
 #include <vector>
 #endif
 
@@ -180,7 +180,7 @@ namespace SpecAlloc {
     void freeAndAllAfterFromOldBlock(void* ptr);
 
     MemoryBlocks _blocks;
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
     std::vector<void*> _debugAllocs;
 #endif
 
@@ -199,9 +199,9 @@ namespace SpecAlloc {
     //  * there is not enough capacity (size > capacity)
     //  * aligning size would cause an overflow (capacity is aligned)
     const size_t capacity = block().getBytesToRight();
-    SPECALLOC_ASSERT(capacity % MemoryAlignment == 0);
+    MEMT_ASSERT(capacity % MemoryAlignment == 0);
     if (size - 1 >= capacity) {
-      SPECALLOC_ASSERT(size == 0 || size > capacity);
+      MEMT_ASSERT(size == 0 || size > capacity);
       if (size == 0) {
         size = 1;
         if (capacity > 0)
@@ -210,24 +210,24 @@ namespace SpecAlloc {
       growCapacity(size);
     }
   capacityOK:
-    SPECALLOC_ASSERT(0 < size);
-    SPECALLOC_ASSERT(size <= block().getBytesToRight());
-    SPECALLOC_ASSERT(MemoryBlocks::alignNoOverflow(size) <= block().getBytesToRight());
+    MEMT_ASSERT(0 < size);
+    MEMT_ASSERT(size <= block().getBytesToRight());
+    MEMT_ASSERT(MemoryBlocks::alignNoOverflow(size) <= block().getBytesToRight());
 
     char* ptr = block().position();
     block().setPosition(ptr + MemoryBlocks::alignNoOverflow(size));
 
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
     _debugAllocs.push_back(ptr);
 #endif
     return ptr;
   }
 
   inline void Arena::freeTop(void* ptr) {
-    SPECALLOC_ASSERT(ptr != 0);
-#ifdef SPECALLOC_DEBUG
-    SPECALLOC_ASSERT(!_debugAllocs.empty());
-    SPECALLOC_ASSERT(_debugAllocs.back() == ptr);
+    MEMT_ASSERT(ptr != 0);
+#ifdef MEMT_DEBUG
+    MEMT_ASSERT(!_debugAllocs.empty());
+    MEMT_ASSERT(_debugAllocs.back() == ptr);
     _debugAllocs.pop_back();
 #endif
 
@@ -238,12 +238,12 @@ namespace SpecAlloc {
   }
 
   inline void Arena::freeAndAllAfter(void* ptr) {
-    SPECALLOC_ASSERT(ptr != 0);
-#ifdef SPECALLOC_DEBUG
+    MEMT_ASSERT(ptr != 0);
+#ifdef MEMT_DEBUG
     while (!_debugAllocs.empty() && ptr != _debugAllocs.back())
       _debugAllocs.pop_back();
-    SPECALLOC_ASSERT(!_debugAllocs.empty());
-    SPECALLOC_ASSERT(_debugAllocs.back() == ptr);
+    MEMT_ASSERT(!_debugAllocs.empty());
+    MEMT_ASSERT(_debugAllocs.back() == ptr);
     _debugAllocs.pop_back();
 #endif
 
@@ -258,7 +258,7 @@ namespace SpecAlloc {
     if (elementCount > static_cast<size_t>(-1) / sizeof(T))
       throw std::bad_alloc();
     const size_t size = elementCount * sizeof(T);
-    SPECALLOC_ASSERT(size / sizeof(T) == elementCount);
+    MEMT_ASSERT(size / sizeof(T) == elementCount);
     char* buffer = static_cast<char*>(alloc(size));
     T* array = reinterpret_cast<T*>(buffer);
     T* arrayEnd = reinterpret_cast<T*>(buffer + size);
@@ -282,8 +282,8 @@ namespace SpecAlloc {
 
   template<class T>
     void Arena::freeTopArray(T* array, T* arrayEnd) {
-    SPECALLOC_ASSERT(array != 0);
-    SPECALLOC_ASSERT(array <= arrayEnd);
+    MEMT_ASSERT(array != 0);
+    MEMT_ASSERT(array <= arrayEnd);
 
     while (arrayEnd != array) {
       --arrayEnd;
@@ -294,8 +294,8 @@ namespace SpecAlloc {
 
   template<class T>
     void Arena::freeArrayAndAllAfter(T* array, T* arrayEnd) {
-    SPECALLOC_ASSERT(array != 0);
-    SPECALLOC_ASSERT(array <= arrayEnd);
+    MEMT_ASSERT(array != 0);
+    MEMT_ASSERT(array <= arrayEnd);
 
     while (arrayEnd != array) {
       --arrayEnd;

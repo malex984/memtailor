@@ -39,9 +39,9 @@ namespace SpecAlloc {
     _position = _begin;
     _end = _begin + capacityInBytes;
 
-    SPECALLOC_ASSERT(!isNull());
-    SPECALLOC_ASSERT(empty());
-    SPECALLOC_ASSERT(capacityInBytes == getBytesInBlock());
+    MEMT_ASSERT(!isNull());
+    MEMT_ASSERT(empty());
+    MEMT_ASSERT(capacityInBytes == getBytesInBlock());
   }
 
   size_t MemoryBlocks::getMemoryUsage() const {
@@ -62,7 +62,7 @@ namespace SpecAlloc {
   }
 
   void MemoryBlocks::Block::freePrevious() {
-    SPECALLOC_ASSERT(hasPreviousBlock());
+    MEMT_ASSERT(hasPreviousBlock());
     Block* previousPrevious = getPreviousBlock()->getPreviousBlock();
     getPreviousBlock()->free();
     _previous = previousPrevious;

@@ -1,5 +1,5 @@
-#ifndef SPECALLOC_ARENA_VECTOR_GUARD
-#define SPECALLOC_ARENA_VECTOR_GUARD
+#ifndef MEMT_ARENA_VECTOR_GUARD
+#define MEMT_ARENA_VECTOR_GUARD
 
 #include "Arena.h"
 
@@ -37,12 +37,12 @@ namespace SpecAlloc {
     const T* end() const {return _end;}
 
     void push_back(const T& t) {
-      SPECALLOC_ASSERT(_end != _capacityEndDebug);
+      MEMT_ASSERT(_end != _capacityEndDebug);
       new (_end) T(t);
       ++_end;
     }
     void pop_back() {
-      SPECALLOC_ASSERT(!empty());
+      MEMT_ASSERT(!empty());
       --_end;
       _end->~T();
     }
@@ -55,7 +55,7 @@ namespace SpecAlloc {
     T* _begin;
     T* _end;
     Arena* _arena; /// @todo: only store if freeing memory
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
     T* _capacityEndDebug;
 #endif
   };
@@ -65,7 +65,7 @@ namespace SpecAlloc {
     _begin = arena.allocArrayNoCon<T>(capacity).first;
     _end = _begin;
     _arena = &arena;
-#ifdef SPECALLOC_DEBUG
+#ifdef MEMT_DEBUG
     _capacityEndDebug = _begin + capacity;
 #endif
   }
