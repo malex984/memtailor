@@ -15,7 +15,7 @@ endif
 cflags = $(CFLAGS) $(CPPFLAGS) -Wall \
          -Wno-uninitialized -Wno-unused-parameter \
          -isystem $(GTEST_DIR)include -Isrc/
-library = libspecalloc.a
+library = libmemtailor.a
 GTEST_VERSION = 1.6.0
 GTEST_DIR = bin/gtest/
 
@@ -42,7 +42,7 @@ endif
 ifeq ($(MODE), shared)
   outdir = bin/shared/
   cflags += -O2 -fPIC
-  library = libspecalloc.so
+  library = libmemtailor.so
   MATCH=true
 endif
 ifeq ($(MODE), profile)
@@ -50,7 +50,6 @@ ifeq ($(MODE), profile)
   cflags += -g -pg -O2 -D PROFILE
   ldflags += -pg
   MATCH=true
-  benchArgs = _profile $(FROBBYARGS)
 endif
 ifeq ($(MODE), analysis)
   rawSources := $(rawSources) $(rawTests)

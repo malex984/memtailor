@@ -3,8 +3,9 @@
 #ifndef MEMT_MEMORY_BLOCKS_GUARD
 #define MEMT_MEMORY_BLOCKS_GUARD
 
-#include <new> // for std::bad_alloc
-#include <cstddef> // for size_t
+#include "stdinc.h"
+#include <new>
+#include <cstddef>
 
 namespace memt {
 

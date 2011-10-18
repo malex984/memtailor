@@ -3,6 +3,7 @@
 #ifndef MEMT_OBJECT_POOL_GUARD
 #define MEMT_OBJECT_POOL_GUARD
 
+#include "stdinc.h"
 #include "MemoryBlocks.h"
 #include <cstddef>
 

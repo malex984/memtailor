@@ -3,6 +3,7 @@
 #ifndef MEMT_ARENA_VECTOR_GUARD
 #define MEMT_ARENA_VECTOR_GUARD
 
+#include "stdinc.h"
 #include "Arena.h"
 
 namespace memt {

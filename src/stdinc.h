@@ -9,7 +9,6 @@
 #include <cassert>
 #define MEMT_ASSERT(X) ::assert(X);
 #endif
-#endif
 
 #ifndef MEMT_ASSERT
 #define MEMT_ASSERT(X)
