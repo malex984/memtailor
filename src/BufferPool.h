@@ -1,12 +1,12 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
-   Distributed under the Modified BSD License. See license.txt. */
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #ifndef MEMT_OBJECT_POOL_GUARD
 #define MEMT_OBJECT_POOL_GUARD
 
 #include "MemoryBlocks.h"
 #include <cstddef>
 
-namespace SpecAlloc {
+namespace memt {
   /** Allocator for allocating and freeing same-size buffers. Uses
       a free list. All allocations are automatically freed when
       the buffer pool is destructed. */

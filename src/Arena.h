@@ -1,5 +1,5 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
-   Distributed under the Modified BSD License. See license.txt. */
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #ifndef MEMT_ARENA_GUARD
 #define MEMT_ARENA_GUARD
 
@@ -15,7 +15,7 @@
 #include <vector>
 #endif
 
-namespace SpecAlloc {
+namespace memt {
   /** This is an arena allocator. Arena allocators are very fast at the
       cost of imposing limitations on how memory can be deallocated.
 
@@ -32,15 +32,16 @@ namespace SpecAlloc {
       if they become old. So the current block is replaced if and only if
       it becomes exhausted.
 
-      The scheme of geometric block growth is used because it allows a very
-      fast implementation with excellent locality of reference. This can
-      consume memory beyond that which the user of the Arena needs - all
-      allocators have memory overhead. Optimal performance on both speed
-      and memory consumption can usully be reached by all code using the same
-      Arena object when that is possible given the stack-order limitation
-      on deallocation.
+      The scheme of geometric block growth is used because it allows a
+      very fast implementation with excellent locality of
+      reference. This can consume memory beyond that which the user of
+      the Arena needs - all allocators have memory overhead. Optimal
+      performance on both speed and memory consumption can usully be
+      reached by all code using the same Arena object when that is
+      possible given the stack-order limitation on deallocation.
 
-      All methods throw bad_alloc if backing memory allocation using new fails.
+      All methods throw bad_alloc if backing memory allocation using
+      new fails.
   */
   class Arena {
   public:

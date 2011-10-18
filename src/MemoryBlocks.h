@@ -1,12 +1,12 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
-   Distributed under the Modified BSD License. See license.txt. */
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #ifndef MEMT_MEMORY_BLOCKS_GUARD
 #define MEMT_MEMORY_BLOCKS_GUARD
 
 #include <new> // for std::bad_alloc
 #include <cstddef> // for size_t
 
-namespace SpecAlloc {
+namespace memt {
 
   /** Handles a linked list of blocks of memory. Intended for use in
       implementing other memory allocators.  */

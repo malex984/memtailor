@@ -1,9 +1,9 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
-   Distributed under the Modified BSD License. See license.txt. */
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #include "stdinc.h"
 #include "MemoryBlocks.h"
 
-namespace SpecAlloc {
+namespace memt {
 
   void MemoryBlocks::freeAllPreviousBlocks() {
     while (_block.hasPreviousBlock())

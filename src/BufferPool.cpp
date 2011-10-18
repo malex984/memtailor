@@ -1,5 +1,5 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
-   Distributed under the Modified BSD License. See license.txt. */
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #include "stdinc.h"
 #include "BufferPool.h"
 
@@ -7,7 +7,7 @@
 #include <limits>
 #include <algorithm>
 
-namespace SpecAlloc {
+namespace memt {
   BufferPool::BufferPool(size_t bufferSize):
     _bufferSize(MemoryBlocks::alignThrowOnOverflow(
       std::max(bufferSize, sizeof(FreeNode)))),

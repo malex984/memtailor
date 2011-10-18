@@ -1,9 +1,11 @@
+/* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
+   MemTailor is distributed under the Modified BSD License. See license.txt. */
 #ifndef MEMT_ARENA_VECTOR_GUARD
 #define MEMT_ARENA_VECTOR_GUARD
 
 #include "Arena.h"
 
-namespace SpecAlloc {
+namespace memt {
   /** Works as std::vector, except it cannot grow its capacity
       and the memory is taken from an Arena.
 
