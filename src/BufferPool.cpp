@@ -7,41 +7,43 @@
 #include <limits>
 #include <algorithm>
 
-BufferPool::BufferPool(size_t bufferSize):
-_bufferSize(MemoryBlocks::alignThrowOnOverflow(
-  std::max(bufferSize, sizeof(FreeNode)))),
-_free(0),
-_blocks() {
-}
-
-void BufferPool::growCapacity() {
-  // ** Calcuate size of block (doubles capacity)
-  size_t size = block().getBytesInBlock();
-  if (size == 0) {
-    // start out at 10 buffers
-    ASSERT(block().isNull());
-    if (_bufferSize > std::numeric_limits<size_t>::max() / 10)
-      throw std::bad_alloc(); // _bufferSize * 10 overflows
-    size = _bufferSize * 10;
-  } else {
-    // double the size
-    if (size > std::numeric_limits<size_t>::max() / 2)
-      throw std::bad_alloc(); // size * 2 overflows
-    size *= 2;
+namespace SpecAlloc {
+  BufferPool::BufferPool(size_t bufferSize):
+    _bufferSize(MemoryBlocks::alignThrowOnOverflow(
+      std::max(bufferSize, sizeof(FreeNode)))),
+    _free(0),
+    _blocks() {
   }
 
-  // ** Allocate next block
-  ASSERT(MemoryBlocks::alignNoOverflow(size) == size);
-  ASSERT(size > block().getBytesInBlock());
-  _blocks.allocBlock(size);
-}
+  void BufferPool::growCapacity() {
+    // ** Calcuate size of block (doubles capacity)
+    size_t size = block().getBytesInBlock();
+    if (size == 0) {
+      // start out at 10 buffers
+      SPECALLOC_ASSERT(block().isNull());
+      if (_bufferSize > std::numeric_limits<size_t>::max() / 10)
+        throw std::bad_alloc(); // _bufferSize * 10 overflows
+      size = _bufferSize * 10;
+    } else {
+      // double the size
+      if (size > std::numeric_limits<size_t>::max() / 2)
+        throw std::bad_alloc(); // size * 2 overflows
+      size *= 2;
+    }
 
-void BufferPool::freeAllBuffers() {
-  _free = 0;
-  _blocks.freeAllPreviousBlocks();
-}
+    // ** Allocate next block
+    SPECALLOC_ASSERT(MemoryBlocks::alignNoOverflow(size) == size);
+    SPECALLOC_ASSERT(size > block().getBytesInBlock());
+    _blocks.allocBlock(size);
+  }
 
-void BufferPool::freeAllBuffersAndBackingMemory() {
-  _free = 0;
-  _blocks.freeAllBlocks();
+  void BufferPool::freeAllBuffers() {
+    _free = 0;
+    _blocks.freeAllPreviousBlocks();
+  }
+
+  void BufferPool::freeAllBuffersAndBackingMemory() {
+    _free = 0;
+    _blocks.freeAllBlocks();
+  }
 }

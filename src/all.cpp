@@ -3,3 +3,5 @@
 #include "BufferPool.cpp"
 #include "MemoryBlocks.cpp"
 #include "Arena.cpp"
+
+#include "ArenaVector.h"

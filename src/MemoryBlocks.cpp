@@ -3,65 +3,68 @@
 #include "stdinc.h"
 #include "MemoryBlocks.h"
 
-void MemoryBlocks::freeAllPreviousBlocks() {
-  while (_block.hasPreviousBlock())
-    freePreviousBlock();
-}
+namespace SpecAlloc {
 
-void MemoryBlocks::freeAllBlocks() {
-  freeAllPreviousBlocks();
-  _block.free();
-  _block.makeNull();
-}
-
-void MemoryBlocks::Block::newBlock(size_t capacityInBytes) {
-  if (!isNull()) {
-    // We set aside space for a block at the end of the memory. Use that
-    // space to store the block for the old memory.
-    const size_t blockStructOffset = alignNoOverflow(getBytesInBlock());
-    Block* block = reinterpret_cast<Block*>(begin() + blockStructOffset);
-    block->_previous = this->getPreviousBlock();
-    block->_begin = begin();
-    block->_end = end();
-    block->_position = position();
-    _previous = block;
+  void MemoryBlocks::freeAllPreviousBlocks() {
+    while (_block.hasPreviousBlock())
+      freePreviousBlock();
   }
 
-  // make space for block information at end of new memory, but do not
-  // use it yet.
-  const size_t aligned = alignThrowOnOverflow(capacityInBytes);
-  const size_t total = aligned + sizeof(Block);
-  if (total < aligned) // check overflow
-    throw std::bad_alloc();
-  _begin = new char[total];
-  _position = _begin;
-  _end = _begin + capacityInBytes;
+  void MemoryBlocks::freeAllBlocks() {
+    freeAllPreviousBlocks();
+    _block.free();
+    _block.makeNull();
+  }
 
-  ASSERT(!isNull());
-  ASSERT(empty());
-  ASSERT(capacityInBytes == getBytesInBlock());
-}
+  void MemoryBlocks::Block::newBlock(size_t capacityInBytes) {
+    if (!isNull()) {
+      // We set aside space for a block at the end of the memory. Use that
+      // space to store the block for the old memory.
+      const size_t blockStructOffset = alignNoOverflow(getBytesInBlock());
+      Block* block = reinterpret_cast<Block*>(begin() + blockStructOffset);
+      block->_previous = this->getPreviousBlock();
+      block->_begin = begin();
+      block->_end = end();
+      block->_position = position();
+      _previous = block;
+    }
 
-size_t MemoryBlocks::getMemoryUsage() const {
-  size_t sum = 0;
-  const Block* block = &_block;
-  do {
-    sum += block->getBytesInBlock();
-    block = block->getPreviousBlock();
-  } while (block != 0);
-  return sum;
-}
+    // make space for block information at end of new memory, but do not
+    // use it yet.
+    const size_t aligned = alignThrowOnOverflow(capacityInBytes);
+    const size_t total = aligned + sizeof(Block);
+    if (total < aligned) // check overflow
+      throw std::bad_alloc();
+    _begin = new char[total];
+    _position = _begin;
+    _end = _begin + capacityInBytes;
 
-void MemoryBlocks::Block::makeNull() {
-  _previous = 0;
-  _begin = 0;
-  _position = 0;
-  _end = 0;
-}
+    SPECALLOC_ASSERT(!isNull());
+    SPECALLOC_ASSERT(empty());
+    SPECALLOC_ASSERT(capacityInBytes == getBytesInBlock());
+  }
 
-void MemoryBlocks::Block::freePrevious() {
-  ASSERT(hasPreviousBlock());
-  Block* previousPrevious = getPreviousBlock()->getPreviousBlock();
-  getPreviousBlock()->free();
-  _previous = previousPrevious;
+  size_t MemoryBlocks::getMemoryUsage() const {
+    size_t sum = 0;
+    const Block* block = &_block;
+    do {
+      sum += block->getBytesInBlock();
+      block = block->getPreviousBlock();
+    } while (block != 0);
+    return sum;
+  }
+
+  void MemoryBlocks::Block::makeNull() {
+    _previous = 0;
+    _begin = 0;
+    _position = 0;
+    _end = 0;
+  }
+
+  void MemoryBlocks::Block::freePrevious() {
+    SPECALLOC_ASSERT(hasPreviousBlock());
+    Block* previousPrevious = getPreviousBlock()->getPreviousBlock();
+    getPreviousBlock()->free();
+    _previous = previousPrevious;
+  }
 }
