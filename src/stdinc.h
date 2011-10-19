@@ -4,10 +4,10 @@
 #ifndef MEMT_STDINC_GUARD
 #define MEMT_STDINC_GUARD
 
-#if defined DEBUG || defined _DEBUG
+#if (defined DEBUG || defined _DEBUG) && (!defined MEMT_NDEBUG)
 #define MEMT_DEBUG
 #include <cassert>
-#define MEMT_ASSERT(X) ::assert(X);
+#define MEMT_ASSERT(X) assert(X)
 #endif
 
 #ifndef MEMT_ASSERT
