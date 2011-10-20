@@ -23,14 +23,14 @@
 #include <algorithm>
 
 TEST(MemoryBlocks, NoOp) {
-  MemoryBlocks blocks;
+  memt::MemoryBlocks blocks;
   ASSERT_TRUE(blocks.getMemoryUsage() == 0);
 }
 
 TEST(MemoryBlocks, MemoryUsage) {
   const size_t MaxOverhead =
-    sizeof(MemoryBlocks::Block) + (MemoryAlignment - 1);
-  MemoryBlocks blocks;
+    sizeof(memt::MemoryBlocks::Block) + (memt::MemoryAlignment - 1);
+  memt::MemoryBlocks blocks;
   ASSERT_EQ(blocks.getMemoryUsage(), 0);
   blocks.allocBlock(100);
   ASSERT_TRUE(blocks.getMemoryUsage() >= 100);
@@ -51,10 +51,10 @@ TEST(MemoryBlocks, MemoryUsage) {
 }
 
 TEST(MemoryBlocks, NoLeak) {
-  MemoryBlocks blocks1;
+  memt::MemoryBlocks blocks1;
   blocks1.allocBlock(100);
 
-  MemoryBlocks blocks2;
+  memt::MemoryBlocks blocks2;
   blocks2.allocBlock(100);
   blocks2.allocBlock(1);
   blocks2.allocBlock(0);
@@ -64,10 +64,10 @@ TEST(MemoryBlocks, NoLeak) {
 }
 
 TEST(MemoryBlocks, Properties) {
-  MemoryBlocks blocks;
+  memt::MemoryBlocks blocks;
   ASSERT_TRUE(blocks.getFrontBlock().isNull());
   for (size_t i = 0; i <= 100; ++i) {
-    MemoryBlocks::Block& block = blocks.allocBlock(i);
+    memt::MemoryBlocks::Block& block = blocks.allocBlock(i);
     std::fill(block.begin(), block.end(), i);
     ASSERT_EQ(&block, &blocks.getFrontBlock());
     ASSERT_FALSE(block.isNull());
@@ -98,7 +98,8 @@ TEST(MemoryBlocks, Properties) {
   }
   for (size_t i = 100; i > 0; --i) {
     ASSERT_TRUE(blocks.getFrontBlock().hasPreviousBlock());
-    MemoryBlocks::Block* previous = blocks.getFrontBlock().getPreviousBlock();
+    memt::MemoryBlocks::Block* previous =
+	  blocks.getFrontBlock().getPreviousBlock();
     for (const char* it = previous->begin(); it != previous->end(); ++it)
       ASSERT_EQ(*it, static_cast<char>(i - 1));
     ASSERT_EQ(previous->getBytesInBlock(), i - 1);
