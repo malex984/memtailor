@@ -1,7 +1,7 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    MemTailor is distributed under the Modified BSD License. See license.txt. */
-#ifndef MEMT_OBJECT_POOL_GUARD
-#define MEMT_OBJECT_POOL_GUARD
+#ifndef MEMT_BUFFER_POOL_GUARD
+#define MEMT_BUFFER_POOL_GUARD
 
 #include "stdinc.h"
 #include "MemoryBlocks.h"

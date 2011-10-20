@@ -24,18 +24,18 @@
 #include <sstream>
 
 TEST(Arena, NoOp) {
-  Arena arena;
+  memt::Arena arena;
 }
 
 TEST(Arena, GetMemoryUsage) {
-  Arena arena;
+  memt::Arena arena;
   ASSERT_EQ(arena.getMemoryUsage(), 0);
   arena.alloc(100);
   ASSERT_TRUE(arena.getMemoryUsage() >= 100);
 }
 
 TEST(Arena, Big) {
-  Arena arena;
+  memt::Arena arena;
   void* a = arena.alloc(5);
   arena.freeTop(arena.alloc(1024 * 1024));
   arena.freeTop(arena.alloc(1024 * 1024));
@@ -45,7 +45,7 @@ TEST(Arena, Big) {
 }
 
 TEST(Arena, Zero) {
-  Arena arena;
+  memt::Arena arena;
   void* a = arena.alloc(0);
   void* b = arena.alloc(0);
   void* c = arena.alloc(0);
@@ -56,7 +56,7 @@ TEST(Arena, Zero) {
 }
 
 TEST(Arena, Many) {
-  Arena arena;
+  memt::Arena arena;
   std::vector<std::pair<char*, char*> > allocs;
 
   for (size_t i = 3; i < 10; ++i) {
@@ -88,7 +88,7 @@ TEST(Arena, Many) {
 }
 
 TEST(Arena, BigAndOverflow) {
-  Arena arena;
+  memt::Arena arena;
   // aligning size causes overflow
   ASSERT_THROW(arena.alloc(static_cast<size_t>(-1)), std::bad_alloc);
 
@@ -101,13 +101,13 @@ TEST(Arena, BigAndOverflow) {
 
   // sizeof(long) * x overflows to a smaller value (0).
   const size_t smallerOverflow = 1ul << (8*sizeof(long) - 1);
-  ASSERT(smallerOverflow > 0);
+  MEMT_ASSERT(smallerOverflow > 0);
   //ASSERT(smallerOverflow * sizeof(long) == 0); compiler warning
   ASSERT_THROW(arena.allocArray<long>(smallerOverflow), std::bad_alloc);
 
   // sizeof(int) * x overflows to a greater value
   const size_t greaterOverflow = (~(0ul)) >> 1;
-  ASSERT(sizeof(long) >= 4);
+  MEMT_ASSERT(sizeof(long) >= 4);
   //ASSERT(greaterOverflow * sizeof(long) > greaterOverflow); compiler warning
   //ASSERT(greaterOverflow != (greaterOverflow * sizeof(long)) / sizeof(long));
   ASSERT_THROW(arena.allocArray<long>(greaterOverflow), std::bad_alloc);
@@ -156,7 +156,7 @@ namespace {
 
 MAKE_HELPER(ConDecon, 0)
 TEST(Arena, ConDecon) {
-  Arena arena;
+  memt::Arena arena;
   arena.freeTopArray(arena.allocArray<ConDeconHelper>(0));
   arena.freeTopArray(arena.allocArray<ConDeconHelper>(3));
   arena.freeTopArray(arena.allocArray<ConDeconHelper>(0));
@@ -166,7 +166,7 @@ TEST(Arena, ConDecon) {
 
 MAKE_HELPER(ConExcep, 4)
 TEST(Arena, ConExcep) {
-  Arena arena;
+  memt::Arena arena;
   ASSERT_THROW(arena.allocArray<ConExcepHelper>(10), size_t);
   ASSERT_EQ(ConExcepHelper::getLog(), "+1+2+3T4-3-2-1");
   ASSERT_TRUE(arena.isEmpty());
@@ -174,7 +174,7 @@ TEST(Arena, ConExcep) {
 
 MAKE_HELPER(NoConDecon, 0)
 TEST(Arena, NoConDecon) {
-  Arena arena;
+  memt::Arena arena;
   std::pair<NoConDeconHelper*, NoConDeconHelper*> p =
     arena.allocArrayNoCon<NoConDeconHelper>(3);
   p.first[0].setId(1);
@@ -188,7 +188,7 @@ TEST(Arena, NoConDecon) {
 
 MAKE_HELPER(ConNoDecon, 0)
 TEST(Arena, ConNoDecon) {
-  Arena arena;
+  memt::Arena arena;
   arena.freeTop(arena.allocArray<ConNoDeconHelper>(3).first);
   ASSERT_EQ(ConNoDeconHelper::getLog(), "+1+2+3");
   ASSERT_TRUE(arena.isEmpty());

@@ -2,7 +2,7 @@
 
 rawSources := BufferPool.cpp Arena.cpp MemoryBlocks.cpp
 rawTests := testMain.cpp BufferPoolTest.cpp MemoryBlocksTest.cpp	\
-  ArenaTest.cpp
+  ArenaTest.cpp libs/gtest.cpp
 
 testSources = $(patsubst %.cpp, src/test/%.cpp, $(rawTests))
 testObjs    = $(patsubst %.cpp, $(outdir)test/%.o, $(rawTests))
@@ -12,12 +12,12 @@ ifndef CXX
   CXX = "g++"
 endif
 
+GTEST_DIR = libs/gtest/
 cflags = $(CFLAGS) $(CPPFLAGS) -Wall \
          -Wno-uninitialized -Wno-unused-parameter \
-         -isystem $(GTEST_DIR)include -Isrc/
+         -isystem $(GTEST_DIR) -isystem $(GTEST_DIR)include -Isrc/
 library = libmemtailor.a
 GTEST_VERSION = 1.6.0
-GTEST_DIR = bin/gtest/
 
 ifndef MODE
  MODE=release
@@ -125,18 +125,16 @@ fixspace:
 
 ##### testing via google gtest #####
 
-$(outdir)gtest.a: $(GTEST_DIR)/src/gtest-all.cc
-	$(CXX) $(cflags) -I$(GTEST_DIR) -c \
-            $(GTEST_DIR)/src/gtest-all.cc -o $(outdir)gtest-all.o
-	$(AR) $(ARFLAGS) $@ $(outdir)gtest-all.o
-
-gtest: bin/gtest
-bin/gtest:
-	@mkdir -p bin/
-	(cd bin/; wget http://googletest.googlecode.com/files/gtest-$(GTEST_VERSION).zip)
-	(cd bin; unzip gtest-$(GTEST_VERSION).zip)
-	(cd bin; rm -rf gtest)
-	(cd bin; ln -s gtest-$(GTEST_VERSION) gtest)
+gtest: libs/gtest
+libs/gtest:
+	rm -rf bin/tmp/ libs/gtest-$(GTEST_VERSION) libs/gtest
+	@mkdir -p bin/tmp/
+	@mkdir -p libs/
+	(cd bin/tmp; wget http://googletest.googlecode.com/files/gtest-$(GTEST_VERSION).zip);
+	cd bin/tmp; unzip gtest-$(GTEST_VERSION).zip;
+	rm -rf bin/tmp/gtest-$(GTEST_VERSION).zip;
+	mv bin/tmp/gtest-$(GTEST_VERSION) libs/
+	cd libs; ln -s gtest-$(GTEST_VERSION) gtest
 
 # Make symbolic link to test program from bin/
 bin/$(testprogram): $(outdir)$(program)
@@ -146,13 +144,13 @@ ifneq ($(MODE), analysis)
 endif
 
 # Link object files into executable
-$(outdir)$(testProgram): $(testObjs) $(objs) $(outdir)gtest.a
+$(outdir)$(testProgram): $(testObjs) $(objs)
 	@mkdir -p $(dir $@)
 ifeq ($(MODE), analysis)
 	echo > $@
 endif
 ifneq ($(MODE), analysis)
-	$(CXX) $(testObjs) $(objs) $(ldflags) $(outdir)gtest.a -o $@
+	$(CXX) $(testObjs) $(objs) $(ldflags) -o $@
 	if [ -f $@.exe ]; then \
       mv -f $@.exe $@; \
 	fi

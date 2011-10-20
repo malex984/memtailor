@@ -8,7 +8,6 @@
 #include <cstddef>
 
 namespace memt {
-
   /** Handles a linked list of blocks of memory. Intended for use in
       implementing other memory allocators.  */
   class MemoryBlocks {
@@ -146,9 +145,9 @@ namespace memt {
     // one addition and one bitwise and.
     const size_t decAlign = MemoryAlignment - 1; // compile time constant
 
-    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
+    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0); // power of 2
       // This works because MemoryAlignment is a power of 2.
-      const size_t aligned = (value + decAlign) & (~decAlign);
+	const size_t aligned = (value + decAlign) & (~decAlign);
 
     MEMT_ASSERT(aligned % MemoryAlignment == 0); // alignment
     MEMT_ASSERT(aligned >= value); // no overflow
@@ -161,10 +160,10 @@ namespace memt {
     // one addition, one branch using a comparison and one bitwise and.
     const size_t decAlign = MemoryAlignment - 1; // compile time constant
 
-    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0) // power of 2
+    MEMT_ASSERT((MemoryAlignment & (decAlign)) == 0); // power of 2
       // This sum overflows if and only if rounding up overflows because
       // MemoryAlignment is a power of 2.
-      const size_t sum = value + decAlign;
+	const size_t sum = value + decAlign;
     if (sum < value)
       throw std::bad_alloc(); // overflow
     const size_t aligned = sum & (~decAlign);
