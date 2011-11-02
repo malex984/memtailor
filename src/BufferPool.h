@@ -47,7 +47,7 @@ namespace memt {
 
     /** Returns the total amount of memory allocated by this object. Includes
         excess capacity that has not been allocated by a client yet. */
-    size_t getMemoryUsage() const {return _blocks.getMemoryUsage();}
+    size_t getMemoryUse() const {return _blocks.getMemoryUse();}
 
   private:
     typedef MemoryBlocks::Block Block;

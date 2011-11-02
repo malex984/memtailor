@@ -43,7 +43,7 @@ namespace memt {
     MEMT_ASSERT(capacityInBytes == getBytesInBlock());
   }
 
-  size_t MemoryBlocks::getMemoryUsage() const {
+  size_t MemoryBlocks::getMemoryUse() const {
     size_t sum = 0;
     const Block* block = &_block;
     do {

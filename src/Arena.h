@@ -154,7 +154,7 @@ namespace memt {
     /** Returns the total amount of memory allocated by this object. Includes
         excess capacity that has not been allocated by a client yet. Does NOT
         include memory for a DEBUG-only mechanism to catch bugs. */
-    size_t getMemoryUsage() const {return _blocks.getMemoryUsage();}
+    size_t getMemoryUse() const {return _blocks.getMemoryUse();}
 
     /** Returns an arena object that can be used for non-thread safe
         scratch memory after static objects have been initialized. The
