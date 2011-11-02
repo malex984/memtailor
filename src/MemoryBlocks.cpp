@@ -53,6 +53,16 @@ namespace memt {
     return sum;
   }
 
+  size_t MemoryBlocks::getMemoryUseToLeft() const {
+    size_t sum = 0;
+    const Block* block = &_block;
+    do {
+      sum += block->getBytesToLeft();
+      block = block->getPreviousBlock();
+    } while (block != 0);
+    return sum;
+  }
+
   void MemoryBlocks::Block::makeNull() {
     _previous = 0;
     _begin = 0;
@@ -65,5 +75,17 @@ namespace memt {
     Block* previousPrevious = getPreviousBlock()->getPreviousBlock();
     getPreviousBlock()->free();
     _previous = previousPrevious;
+  }
+
+  MemoryBlocks::Block* MemoryBlocks::blockOf(const void* ptr) {
+	if (ptr == 0)
+	  return 0; // avoid saying that null is in a null block
+    Block* block = &_block;
+    do {
+	  if (block->isInBlock(ptr))
+		return block;
+      block = block->getPreviousBlock();
+    } while (block != 0);
+    return 0;
   }
 }

@@ -47,8 +47,26 @@ namespace memt {
     /** Returns the current front block. Can be a null block object. */
     Block const& getFrontBlock() const {return _block;}
 
+	/** Returns true if ptr is in some block of this object. Blocks that
+     have been freed do not count. Note that stray pointers may randomly
+     happen to hit a block. */
+    bool inSomeBlock(void* ptr) const {return blockOf(ptr) != 0;}
+
+    /** Returns the block that contains ptr, or null if there is no
+	 such block. Always returns null if ptr is null, even though
+     strictly speaking a null pointer will be in the range of
+     a null block. */
+    Block* blockOf(const void* ptr);
+    const Block* blockOf(const void* ptr) const {
+	  return const_cast<MemoryBlocks&>(*this).blockOf(ptr);
+    }
+
     /** Returns the total amount of memory allocated by this object. */
     size_t getMemoryUse() const;
+
+    /** Returns the total amount of memory in the left parts of the
+     blocks of this object. */
+    size_t getMemoryUseToLeft() const;
 
     /** Rounds value up to the nearest multiple of MemoryAlignment. This
         rounded up value must be representable in a size_t. */
@@ -75,7 +93,9 @@ namespace memt {
       char const* position() const {return _position;}
       inline void setPosition(const void* position);
 
-      /** Returns true if ptr is in the range [begin(), end()). */
+      /** Returns true if ptr is in the range [begin(), end()). Be aware
+       that this implies that the return value is true when ptr is null
+       and the block is a null. */
       inline bool isInBlock(const void* ptr) const;
 
       /** Returns the number of bytes in the range [begin(), end()). */
@@ -83,6 +103,9 @@ namespace memt {
 
       /** Returns the number of bytes in the range [position(), end()). */
       size_t getBytesToRight() const {return _end - _position;}
+
+      /** Returns the number of bytes in the range [begin(), position()). */
+      size_t getBytesToLeft() const {return _position - _begin;}
 
       /** Returns true if position() == begin(). */
       bool empty() const {return position() == begin();}

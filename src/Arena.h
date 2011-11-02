@@ -85,8 +85,8 @@ namespace memt {
     /** Allocates memory for an instance of T. No construction
         is performed. */
     template<class T>
-      void* allocObjectNoCon() {
-      return alloc(sizeof(T));
+    T* allocObjectNoCon() {
+      return static_cast<T*>(alloc(sizeof(T)));
     }
 
     /** Destructs *ptr and then frees it as a memory buffer.
@@ -155,6 +155,12 @@ namespace memt {
         excess capacity that has not been allocated by a client yet. Does NOT
         include memory for a DEBUG-only mechanism to catch bugs. */
     size_t getMemoryUse() const {return _blocks.getMemoryUse();}
+
+    /** Returns the total amount of memory allocated by this object to
+        clients. Does not include excess capacity that is not currently
+        allocated by a client. Does not include memory for a DEBUG-only
+        mechanism to catch bugs. */
+    size_t getAllocatedMemoryUse() const {return _blocks.getMemoryUseToLeft();}
 
     /** Returns an arena object that can be used for non-thread safe
         scratch memory after static objects have been initialized. The

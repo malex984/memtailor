@@ -37,17 +37,35 @@ namespace memt {
         buffers. Will never be less than requested. */
     size_t getBufferSize() const {return _bufferSize;}
 
-    /** Marks all allocated buffers as available for reuse. Does not
-        deallocate all the backing memory. */
+    /** Frees all allocated buffers. Does not deallocate all the
+        internal backing memory, but may deallocate some of it. */
     void freeAllBuffers();
 
-    /** Marks all allcoated buffers as available for reuse and frees
-        all backing memory too. */
+    /** Frees all allocated buffers and frees all internal backing
+        memory too. */
     void freeAllBuffersAndBackingMemory();
 
-    /** Returns the total amount of memory allocated by this object. Includes
-        excess capacity that has not been allocated by a client yet. */
+    /** Returns the total amount of memory currently allocated by this
+        object. Includes excess capacity that has not been allocated
+        to a client yet. */
     size_t getMemoryUse() const {return _blocks.getMemoryUse();}
+
+	/** Returns true if ptr is inside the memory area internally
+	 allocated by this BufferPool. Only call this method on a valid
+	 pointer. Note that pointers that have been allocated and then
+	 freed on a pool are not guaranteed to be valid as the internal
+	 backing memory could have been deallocated.
+
+	 The intended use for this method is to assert that a given valid
+	 pointer has been allocated from a given pool. It could also be
+	 used to determine which of several pools a non-freed pointer
+	 comes from, though needing to make this determination probably
+	 indicates a design problem.
+
+	 This method runs in logarithmic time in the maximum number of
+	 allocations that have been live at the same time for this
+	 pool. */
+	bool fromPool(const void* ptr) const;
 
   private:
     typedef MemoryBlocks::Block Block;
@@ -64,7 +82,7 @@ namespace memt {
 
     const size_t _bufferSize; /// size of the buffers returned by alloc
     FreeNode* _free; /// null indicates that the free list is empty
-    MemoryBlocks _blocks;
+    MemoryBlocks _blocks; /// internal backing memory
   };
 
   inline void* BufferPool::alloc() {
@@ -82,6 +100,8 @@ namespace memt {
   }
 
   inline void BufferPool::free(void* ptr) {
+    MEMT_ASSERT(ptr != 0);
+    MEMT_ASSERT(fromPool(ptr));
     FreeNode* node = reinterpret_cast<FreeNode*>(ptr);
     node->next = _free;
     _free = node;

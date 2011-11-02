@@ -45,4 +45,16 @@ namespace memt {
     _free = 0;
     _blocks.freeAllBlocks();
   }
+
+  bool BufferPool::fromPool(const void* ptr) const {
+	MemoryBlocks::Block const* block = _blocks.blockOf(ptr);
+	if (block == 0)
+	  return false;
+#ifdef MEMT_DEBUG
+	const size_t offset =
+	  static_cast<size_t>(static_cast<const char*>(ptr) - block->begin());
+	MEMT_ASSERT(offset % _bufferSize == 0); // otherwise not a valid pointer
+#endif
+	return true;
+  }
 }
