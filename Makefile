@@ -137,10 +137,10 @@ libs/gtest:
 	cd libs; ln -s gtest-$(GTEST_VERSION) gtest
 
 # Make symbolic link to test program from bin/
-bin/$(testprogram): $(outdir)$(program)
+bin/$(testprogram): $(outdir)$(testProgram)
 	@mkdir -p bin
 ifneq ($(MODE), analysis)
-	cd bin; rm -f $(program); ln -s ../$(outdir)$(program) $(program); cd ..
+	cd bin; rm -f $(program); ln -s ../$(outdir)$(testProgram) $(testProgram); cd ..
 endif
 
 # Link object files into executable
