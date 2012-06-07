@@ -3,8 +3,8 @@
 #ifndef MEMT_BUFFER_POOL_GUARD
 #define MEMT_BUFFER_POOL_GUARD
 
-#include "stdinc.h"
-#include "MemoryBlocks.h"
+#include "memtailor/stdinc.h"
+#include "memtailor/MemoryBlocks.h"
 #include <cstddef>
 
 namespace memt {

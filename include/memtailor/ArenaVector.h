@@ -3,8 +3,8 @@
 #ifndef MEMT_ARENA_VECTOR_GUARD
 #define MEMT_ARENA_VECTOR_GUARD
 
-#include "stdinc.h"
-#include "Arena.h"
+#include "memtailor/stdinc.h"
+#include "memtailor/Arena.h"
 
 namespace memt {
   /** Works as std::vector, except it cannot grow its capacity

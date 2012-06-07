@@ -1,6 +1,6 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    MemTailor is distributed under the Modified BSD License. See license.txt. */
-#include "MemoryBlocks.h"
+#include "memtailor/MemoryBlocks.h"
 
 namespace memt {
 

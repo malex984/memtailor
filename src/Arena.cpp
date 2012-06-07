@@ -1,6 +1,6 @@
 /* Copyright (C) 2011 Bjarke Hammersholt Roune (www.broune.com)
    MemTailor is distributed under the Modified BSD License. See license.txt. */
-#include "Arena.h"
+#include "memtailor/Arena.h"
 
 #include <limits>
 
