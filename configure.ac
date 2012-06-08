@@ -2,7 +2,7 @@ AC_INIT([memtailer], [1.0])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([.])
-AC_CONFIG_SRCDIR([include/memtailor.h])
+AC_CONFIG_SRCDIR([memtailor.h])
 # AC_CONFIG_HEADER([config.h])
 
 AM_MAINTAINER_MODE
@@ -20,6 +20,6 @@ dnl Check if build env is sane
 AM_SANITY_CHECK
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([include/Makefile])
+# AC_CONFIG_FILES([include/Makefile])
 
 AC_OUTPUT

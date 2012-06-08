@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-AM_CPPFLAGS = -I${top_srcdir}/include
+AM_CPPFLAGS = -I${top_srcdir}/
 # -I${top_builddir} 
 
 lib_LTLIBRARIES = libmemtailor.la
@@ -9,11 +9,14 @@ lib_LTLIBRARIES = libmemtailor.la
 #libmemtailor_la_CFLAGS   = 
 #libmemtailor_la_CXXFLAGS = 
 
-libmemtailor_la_SOURCES  = src/BufferPool.cpp src/Arena.cpp src/MemoryBlocks.cpp
+libmemtailor_la_SOURCES  = memtailor/BufferPool.cpp memtailor/Arena.cpp memtailor/MemoryBlocks.cpp
+nobase_include_HEADERS = memtailor.h memtailor/stdinc.h \
+ memtailor/BufferPool.h memtailor/Arena.h memtailor/ArenaVector.h memtailor/MemoryBlocks.h
+
 
 EXTRA_DIST = autogen.sh
 
-SUBDIRS=include
+# SUBDIRS=include
 
 # TESTDIRS=$(PACKAGES)
 # TESTS=??
