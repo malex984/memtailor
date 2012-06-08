@@ -16,9 +16,6 @@ nobase_include_HEADERS = memtailor.h memtailor/stdinc.h \
 
 EXTRA_DIST = autogen.sh
 
-# SUBDIRS=include
-
-# TESTDIRS=$(PACKAGES)
-# TESTS=??
-# check_PROGRAMS=$(TESTS)
+SUBDIRS=test
+TESTDIRS=test
 

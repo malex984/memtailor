@@ -16,9 +16,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see http://www.gnu.org/licenses/.
 */
-#include "stdinc.h"
-#include "Arena.h"
-#include "gtest/gtest.h"
+#include <memtailor/stdinc.h>
+#include <memtailor/Arena.h>
+#include <gtest/gtest.h>
 
 #include <algorithm>
 #include <sstream>
@@ -29,9 +29,9 @@ TEST(Arena, NoOp) {
 
 TEST(Arena, GetMemoryUsage) {
   memt::Arena arena;
-  ASSERT_EQ(arena.getMemoryUsage(), 0);
+  ASSERT_EQ(arena.getMemoryUse(), 0);
   arena.alloc(100);
-  ASSERT_TRUE(arena.getMemoryUsage() >= 100);
+  ASSERT_TRUE(arena.getMemoryUse() >= 100);
 }
 
 TEST(Arena, Big) {

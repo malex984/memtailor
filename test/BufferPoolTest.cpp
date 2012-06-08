@@ -15,9 +15,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see http://www.gnu.org/licenses/.
 */
-#include "stdinc.h"
-#include "gtest/gtest.h"
-#include "BufferPool.h"
+#include <memtailor/stdinc.h>
+#include <gtest/gtest.h>
+#include <memtailor/BufferPool.h>
 
 #include <list>
 
@@ -41,9 +41,9 @@ TEST(BufferPool, FreeBuffers) {
 
 TEST(BufferPool, GetMemoryUsage) {
   memt::BufferPool pool(100);
-  ASSERT_EQ(pool.getMemoryUsage(), 0);
+  ASSERT_EQ(pool.getMemoryUse(), 0);
   pool.alloc();
-  ASSERT_TRUE(pool.getMemoryUsage() >= 100);
+  ASSERT_TRUE(pool.getMemoryUse() >= 100);
 }
 
 TEST(BufferPool, FreeBuffersAndBackingMemory) {

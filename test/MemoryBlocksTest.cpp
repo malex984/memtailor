@@ -15,39 +15,39 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see http://www.gnu.org/licenses/.
 */
-#include "stdinc.h"
-#include "gtest/gtest.h"
-#include "MemoryBlocks.h"
+#include <memtailor/stdinc.h>
+#include <gtest/gtest.h>
+#include <memtailor/MemoryBlocks.h>
 
 #include <vector>
 #include <algorithm>
 
 TEST(MemoryBlocks, NoOp) {
   memt::MemoryBlocks blocks;
-  ASSERT_TRUE(blocks.getMemoryUsage() == 0);
+  ASSERT_TRUE(blocks.getMemoryUse() == 0);
 }
 
 TEST(MemoryBlocks, MemoryUsage) {
   const size_t MaxOverhead =
     sizeof(memt::MemoryBlocks::Block) + (memt::MemoryAlignment - 1);
   memt::MemoryBlocks blocks;
-  ASSERT_EQ(blocks.getMemoryUsage(), 0);
+  ASSERT_EQ(blocks.getMemoryUse(), 0);
   blocks.allocBlock(100);
-  ASSERT_TRUE(blocks.getMemoryUsage() >= 100);
-  ASSERT_TRUE(blocks.getMemoryUsage() <= 100 + MaxOverhead);
+  ASSERT_TRUE(blocks.getMemoryUse() >= 100);
+  ASSERT_TRUE(blocks.getMemoryUse() <= 100 + MaxOverhead);
 
   blocks.allocBlock(200);
   blocks.allocBlock(400);
-  ASSERT_TRUE(blocks.getMemoryUsage() >= 700);
-  ASSERT_TRUE(blocks.getMemoryUsage() <= 700 + 3 * MaxOverhead);
+  ASSERT_TRUE(blocks.getMemoryUse() >= 700);
+  ASSERT_TRUE(blocks.getMemoryUse() <= 700 + 3 * MaxOverhead);
 
   blocks.freeAllPreviousBlocks();
-  ASSERT_TRUE(blocks.getMemoryUsage() >= 400);
-  ASSERT_TRUE(blocks.getMemoryUsage() <= 400 + 3 * MaxOverhead);
+  ASSERT_TRUE(blocks.getMemoryUse() >= 400);
+  ASSERT_TRUE(blocks.getMemoryUse() <= 400 + 3 * MaxOverhead);
 
   blocks.allocBlock(800);
   blocks.freeAllBlocks();
-  ASSERT_EQ(blocks.getMemoryUsage(), 0);
+  ASSERT_EQ(blocks.getMemoryUse(), 0);
 }
 
 TEST(MemoryBlocks, NoLeak) {

@@ -1,5 +1,5 @@
-#include "stdinc.h"
-#include "gtest/gtest.h"
+#include <memtailor/stdinc.h>
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

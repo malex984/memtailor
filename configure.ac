@@ -20,6 +20,6 @@ dnl Check if build env is sane
 AM_SANITY_CHECK
 
 AC_CONFIG_FILES([Makefile])
-# AC_CONFIG_FILES([include/Makefile])
+AC_CONFIG_FILES([test/Makefile])
 
 AC_OUTPUT
