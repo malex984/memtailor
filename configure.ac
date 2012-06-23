@@ -60,14 +60,3 @@ AC_CONFIG_FILES([test/Makefile])
 dnl Macro that is required to be at the end of any Autoconf script.
 dnl Creates config.status and launches it.
 AC_OUTPUT
-
-
-# AC_PROG_CC_C_O tests if the C compiler allows the -o and -c flags at the
-# same time. We do not use a C compiler for this project, so we do not
-# need it
-#AM_PROG_CC_C_O
-
-# checks to make sure that the clock on the system is working correctly.
-# This macro is automatically run from AM_INIT_AUTOMAKE, so we do not need to
-# run it.
-#AM_SANITY_CHECK
