@@ -27,14 +27,14 @@ nobase_include_HEADERS = memtailor.h memtailor/stdinc.h				\
 EXTRA_DIST = autogen.sh
 
 # Tell Automake to recursively run Automake files in the listed directories
-SUBDIRS=test
+#SUBDIRS=test
 
 # I don't know what this does
-TESTDIRS=test
+#TESTDIRS=test
 
 # allow to download gtest in case of needing to run unit tests
-GTEST_DIR = $(srcdir)/libs/
-GTEST_TMP_DIR = $(srcdir)/libs/
+GTEST_DIR = $(top_srcdir)/libs/
+GTEST_TMP_DIR = $(top_srcdir)/libs/
 GTEST_VERSION = 1.6.0
 GTEST_DOWNLOAD_FILE = gtest-$(GTEST_VERSION).zip
 gtest: $(GTEST_DIR)/gtest
@@ -49,3 +49,12 @@ $(GTEST_DIR)/gtest:
 	rm -rf $(GTEST_DIR)/gtest;
 	mv $(GTEST_TMP_DIR)/gtest-$(GTEST_VERSION) $(GTEST_DIR)/gtest;
 .PHONY: gtest
+
+TESTS=test
+check_PROGRAMS=$(TESTS)
+
+test_CXXFLAGS= -I$(top_srcdir)/libs/gtest/include -I$(top_srcdir)/libs/gtest/
+test_LDFLAGS= $(top_builddir)/libmemtailor.la
+# test_LIBS=
+test_SOURCES= test/ArenaTest.cpp test/BufferPoolTest.cpp			\
+  test/MemoryBlocksTest.cpp test/testMain.cpp test/gtestInclude.cpp

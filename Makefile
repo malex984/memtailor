@@ -35,6 +35,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = i686-pc-cygwin
 host_triplet = i686-pc-cygwin
+TESTS = test$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(nobase_include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -82,8 +84,20 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libmemtailor_la_LIBADD =
-am_libmemtailor_la_OBJECTS = BufferPool.lo Arena.lo MemoryBlocks.lo
+am__dirstamp = $(am__leading_dot)dirstamp
+am_libmemtailor_la_OBJECTS = memtailor/BufferPool.lo \
+	memtailor/Arena.lo memtailor/MemoryBlocks.lo
 libmemtailor_la_OBJECTS = $(am_libmemtailor_la_OBJECTS)
+am__EXEEXT_1 = test$(EXEEXT)
+am_test_OBJECTS = test/test-ArenaTest.$(OBJEXT) \
+	test/test-BufferPoolTest.$(OBJEXT) \
+	test/test-MemoryBlocksTest.$(OBJEXT) \
+	test/test-testMain.$(OBJEXT) test/test-gtestInclude.$(OBJEXT)
+test_OBJECTS = $(am_test_OBJECTS)
+test_LDADD = $(LDADD)
+test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(test_CXXFLAGS) $(CXXFLAGS) \
+	$(test_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -97,24 +111,13 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libmemtailor_la_SOURCES)
-DIST_SOURCES = $(libmemtailor_la_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
-	html-recursive info-recursive install-data-recursive \
-	install-dvi-recursive install-exec-recursive \
-	install-html-recursive install-info-recursive \
-	install-pdf-recursive install-ps-recursive install-recursive \
-	installcheck-recursive installdirs-recursive pdf-recursive \
-	ps-recursive uninstall-recursive
+SOURCES = $(libmemtailor_la_SOURCES) $(test_SOURCES)
+DIST_SOURCES = $(libmemtailor_la_SOURCES) $(test_SOURCES)
 HEADERS = $(nobase_include_HEADERS)
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
-AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
-	$(RECURSIVE_CLEAN_TARGETS:-recursive=) tags TAGS ctags CTAGS \
-	distdir dist dist-all distcheck
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+am__tty_colors = \
+red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -124,31 +127,6 @@ am__remove_distdir = \
       && rm -rf "$(distdir)" \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
 DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
@@ -306,17 +284,23 @@ nobase_include_HEADERS = memtailor.h memtailor/stdinc.h				\
 EXTRA_DIST = autogen.sh
 
 # Tell Automake to recursively run Automake files in the listed directories
-SUBDIRS = test
+#SUBDIRS=test
 
 # I don't know what this does
-TESTDIRS = test
+#TESTDIRS=test
 
 # allow to download gtest in case of needing to run unit tests
-GTEST_DIR = $(srcdir)/libs/
-GTEST_TMP_DIR = $(srcdir)/libs/
+GTEST_DIR = $(top_srcdir)/libs/
+GTEST_TMP_DIR = $(top_srcdir)/libs/
 GTEST_VERSION = 1.6.0
 GTEST_DOWNLOAD_FILE = gtest-$(GTEST_VERSION).zip
-all: all-recursive
+test_CXXFLAGS = -I$(top_srcdir)/libs/gtest/include -I$(top_srcdir)/libs/gtest/
+test_LDFLAGS = $(top_builddir)/libmemtailor.la
+# test_LIBS=
+test_SOURCES = test/ArenaTest.cpp test/BufferPoolTest.cpp			\
+  test/MemoryBlocksTest.cpp test/testMain.cpp test/gtestInclude.cpp
+
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
@@ -385,66 +369,175 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+memtailor/$(am__dirstamp):
+	@$(MKDIR_P) memtailor
+	@: > memtailor/$(am__dirstamp)
+memtailor/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) memtailor/$(DEPDIR)
+	@: > memtailor/$(DEPDIR)/$(am__dirstamp)
+memtailor/BufferPool.lo: memtailor/$(am__dirstamp) \
+	memtailor/$(DEPDIR)/$(am__dirstamp)
+memtailor/Arena.lo: memtailor/$(am__dirstamp) \
+	memtailor/$(DEPDIR)/$(am__dirstamp)
+memtailor/MemoryBlocks.lo: memtailor/$(am__dirstamp) \
+	memtailor/$(DEPDIR)/$(am__dirstamp)
 libmemtailor.la: $(libmemtailor_la_OBJECTS) $(libmemtailor_la_DEPENDENCIES) $(EXTRA_libmemtailor_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libmemtailor_la_OBJECTS) $(libmemtailor_la_LIBADD) $(LIBS)
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+test/$(am__dirstamp):
+	@$(MKDIR_P) test
+	@: > test/$(am__dirstamp)
+test/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) test/$(DEPDIR)
+	@: > test/$(DEPDIR)/$(am__dirstamp)
+test/test-ArenaTest.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test/test-BufferPoolTest.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test/test-MemoryBlocksTest.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test/test-testMain.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test/test-gtestInclude.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
+test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) $(EXTRA_test_DEPENDENCIES) 
+	@rm -f test$(EXEEXT)
+	$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f memtailor/Arena.$(OBJEXT)
+	-rm -f memtailor/Arena.lo
+	-rm -f memtailor/BufferPool.$(OBJEXT)
+	-rm -f memtailor/BufferPool.lo
+	-rm -f memtailor/MemoryBlocks.$(OBJEXT)
+	-rm -f memtailor/MemoryBlocks.lo
+	-rm -f test/test-ArenaTest.$(OBJEXT)
+	-rm -f test/test-BufferPoolTest.$(OBJEXT)
+	-rm -f test/test-MemoryBlocksTest.$(OBJEXT)
+	-rm -f test/test-gtestInclude.$(OBJEXT)
+	-rm -f test/test-testMain.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/Arena.Plo
-include ./$(DEPDIR)/BufferPool.Plo
-include ./$(DEPDIR)/MemoryBlocks.Plo
+include memtailor/$(DEPDIR)/Arena.Plo
+include memtailor/$(DEPDIR)/BufferPool.Plo
+include memtailor/$(DEPDIR)/MemoryBlocks.Plo
+include test/$(DEPDIR)/test-ArenaTest.Po
+include test/$(DEPDIR)/test-BufferPoolTest.Po
+include test/$(DEPDIR)/test-MemoryBlocksTest.Po
+include test/$(DEPDIR)/test-gtestInclude.Po
+include test/$(DEPDIR)/test-testMain.Po
 
 .cpp.o:
-	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.lo:
-	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Plo
 #	source='$<' object='$@' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(LTCXXCOMPILE) -c -o $@ $<
 
-BufferPool.lo: memtailor/BufferPool.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BufferPool.lo -MD -MP -MF $(DEPDIR)/BufferPool.Tpo -c -o BufferPool.lo `test -f 'memtailor/BufferPool.cpp' || echo '$(srcdir)/'`memtailor/BufferPool.cpp
-	$(am__mv) $(DEPDIR)/BufferPool.Tpo $(DEPDIR)/BufferPool.Plo
-#	source='memtailor/BufferPool.cpp' object='BufferPool.lo' libtool=yes \
+test/test-ArenaTest.o: test/ArenaTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-ArenaTest.o -MD -MP -MF test/$(DEPDIR)/test-ArenaTest.Tpo -c -o test/test-ArenaTest.o `test -f 'test/ArenaTest.cpp' || echo '$(srcdir)/'`test/ArenaTest.cpp
+	$(am__mv) test/$(DEPDIR)/test-ArenaTest.Tpo test/$(DEPDIR)/test-ArenaTest.Po
+#	source='test/ArenaTest.cpp' object='test/test-ArenaTest.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BufferPool.lo `test -f 'memtailor/BufferPool.cpp' || echo '$(srcdir)/'`memtailor/BufferPool.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-ArenaTest.o `test -f 'test/ArenaTest.cpp' || echo '$(srcdir)/'`test/ArenaTest.cpp
 
-Arena.lo: memtailor/Arena.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Arena.lo -MD -MP -MF $(DEPDIR)/Arena.Tpo -c -o Arena.lo `test -f 'memtailor/Arena.cpp' || echo '$(srcdir)/'`memtailor/Arena.cpp
-	$(am__mv) $(DEPDIR)/Arena.Tpo $(DEPDIR)/Arena.Plo
-#	source='memtailor/Arena.cpp' object='Arena.lo' libtool=yes \
+test/test-ArenaTest.obj: test/ArenaTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-ArenaTest.obj -MD -MP -MF test/$(DEPDIR)/test-ArenaTest.Tpo -c -o test/test-ArenaTest.obj `if test -f 'test/ArenaTest.cpp'; then $(CYGPATH_W) 'test/ArenaTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/ArenaTest.cpp'; fi`
+	$(am__mv) test/$(DEPDIR)/test-ArenaTest.Tpo test/$(DEPDIR)/test-ArenaTest.Po
+#	source='test/ArenaTest.cpp' object='test/test-ArenaTest.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Arena.lo `test -f 'memtailor/Arena.cpp' || echo '$(srcdir)/'`memtailor/Arena.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-ArenaTest.obj `if test -f 'test/ArenaTest.cpp'; then $(CYGPATH_W) 'test/ArenaTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/ArenaTest.cpp'; fi`
 
-MemoryBlocks.lo: memtailor/MemoryBlocks.cpp
-	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MemoryBlocks.lo -MD -MP -MF $(DEPDIR)/MemoryBlocks.Tpo -c -o MemoryBlocks.lo `test -f 'memtailor/MemoryBlocks.cpp' || echo '$(srcdir)/'`memtailor/MemoryBlocks.cpp
-	$(am__mv) $(DEPDIR)/MemoryBlocks.Tpo $(DEPDIR)/MemoryBlocks.Plo
-#	source='memtailor/MemoryBlocks.cpp' object='MemoryBlocks.lo' libtool=yes \
+test/test-BufferPoolTest.o: test/BufferPoolTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-BufferPoolTest.o -MD -MP -MF test/$(DEPDIR)/test-BufferPoolTest.Tpo -c -o test/test-BufferPoolTest.o `test -f 'test/BufferPoolTest.cpp' || echo '$(srcdir)/'`test/BufferPoolTest.cpp
+	$(am__mv) test/$(DEPDIR)/test-BufferPoolTest.Tpo test/$(DEPDIR)/test-BufferPoolTest.Po
+#	source='test/BufferPoolTest.cpp' object='test/test-BufferPoolTest.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MemoryBlocks.lo `test -f 'memtailor/MemoryBlocks.cpp' || echo '$(srcdir)/'`memtailor/MemoryBlocks.cpp
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-BufferPoolTest.o `test -f 'test/BufferPoolTest.cpp' || echo '$(srcdir)/'`test/BufferPoolTest.cpp
+
+test/test-BufferPoolTest.obj: test/BufferPoolTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-BufferPoolTest.obj -MD -MP -MF test/$(DEPDIR)/test-BufferPoolTest.Tpo -c -o test/test-BufferPoolTest.obj `if test -f 'test/BufferPoolTest.cpp'; then $(CYGPATH_W) 'test/BufferPoolTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/BufferPoolTest.cpp'; fi`
+	$(am__mv) test/$(DEPDIR)/test-BufferPoolTest.Tpo test/$(DEPDIR)/test-BufferPoolTest.Po
+#	source='test/BufferPoolTest.cpp' object='test/test-BufferPoolTest.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-BufferPoolTest.obj `if test -f 'test/BufferPoolTest.cpp'; then $(CYGPATH_W) 'test/BufferPoolTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/BufferPoolTest.cpp'; fi`
+
+test/test-MemoryBlocksTest.o: test/MemoryBlocksTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-MemoryBlocksTest.o -MD -MP -MF test/$(DEPDIR)/test-MemoryBlocksTest.Tpo -c -o test/test-MemoryBlocksTest.o `test -f 'test/MemoryBlocksTest.cpp' || echo '$(srcdir)/'`test/MemoryBlocksTest.cpp
+	$(am__mv) test/$(DEPDIR)/test-MemoryBlocksTest.Tpo test/$(DEPDIR)/test-MemoryBlocksTest.Po
+#	source='test/MemoryBlocksTest.cpp' object='test/test-MemoryBlocksTest.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-MemoryBlocksTest.o `test -f 'test/MemoryBlocksTest.cpp' || echo '$(srcdir)/'`test/MemoryBlocksTest.cpp
+
+test/test-MemoryBlocksTest.obj: test/MemoryBlocksTest.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-MemoryBlocksTest.obj -MD -MP -MF test/$(DEPDIR)/test-MemoryBlocksTest.Tpo -c -o test/test-MemoryBlocksTest.obj `if test -f 'test/MemoryBlocksTest.cpp'; then $(CYGPATH_W) 'test/MemoryBlocksTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/MemoryBlocksTest.cpp'; fi`
+	$(am__mv) test/$(DEPDIR)/test-MemoryBlocksTest.Tpo test/$(DEPDIR)/test-MemoryBlocksTest.Po
+#	source='test/MemoryBlocksTest.cpp' object='test/test-MemoryBlocksTest.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-MemoryBlocksTest.obj `if test -f 'test/MemoryBlocksTest.cpp'; then $(CYGPATH_W) 'test/MemoryBlocksTest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/MemoryBlocksTest.cpp'; fi`
+
+test/test-testMain.o: test/testMain.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-testMain.o -MD -MP -MF test/$(DEPDIR)/test-testMain.Tpo -c -o test/test-testMain.o `test -f 'test/testMain.cpp' || echo '$(srcdir)/'`test/testMain.cpp
+	$(am__mv) test/$(DEPDIR)/test-testMain.Tpo test/$(DEPDIR)/test-testMain.Po
+#	source='test/testMain.cpp' object='test/test-testMain.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-testMain.o `test -f 'test/testMain.cpp' || echo '$(srcdir)/'`test/testMain.cpp
+
+test/test-testMain.obj: test/testMain.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-testMain.obj -MD -MP -MF test/$(DEPDIR)/test-testMain.Tpo -c -o test/test-testMain.obj `if test -f 'test/testMain.cpp'; then $(CYGPATH_W) 'test/testMain.cpp'; else $(CYGPATH_W) '$(srcdir)/test/testMain.cpp'; fi`
+	$(am__mv) test/$(DEPDIR)/test-testMain.Tpo test/$(DEPDIR)/test-testMain.Po
+#	source='test/testMain.cpp' object='test/test-testMain.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-testMain.obj `if test -f 'test/testMain.cpp'; then $(CYGPATH_W) 'test/testMain.cpp'; else $(CYGPATH_W) '$(srcdir)/test/testMain.cpp'; fi`
+
+test/test-gtestInclude.o: test/gtestInclude.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-gtestInclude.o -MD -MP -MF test/$(DEPDIR)/test-gtestInclude.Tpo -c -o test/test-gtestInclude.o `test -f 'test/gtestInclude.cpp' || echo '$(srcdir)/'`test/gtestInclude.cpp
+	$(am__mv) test/$(DEPDIR)/test-gtestInclude.Tpo test/$(DEPDIR)/test-gtestInclude.Po
+#	source='test/gtestInclude.cpp' object='test/test-gtestInclude.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-gtestInclude.o `test -f 'test/gtestInclude.cpp' || echo '$(srcdir)/'`test/gtestInclude.cpp
+
+test/test-gtestInclude.obj: test/gtestInclude.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -MT test/test-gtestInclude.obj -MD -MP -MF test/$(DEPDIR)/test-gtestInclude.Tpo -c -o test/test-gtestInclude.obj `if test -f 'test/gtestInclude.cpp'; then $(CYGPATH_W) 'test/gtestInclude.cpp'; else $(CYGPATH_W) '$(srcdir)/test/gtestInclude.cpp'; fi`
+	$(am__mv) test/$(DEPDIR)/test-gtestInclude.Tpo test/$(DEPDIR)/test-gtestInclude.Po
+#	source='test/gtestInclude.cpp' object='test/test-gtestInclude.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CXXFLAGS) $(CXXFLAGS) -c -o test/test-gtestInclude.obj `if test -f 'test/gtestInclude.cpp'; then $(CYGPATH_W) 'test/gtestInclude.cpp'; else $(CYGPATH_W) '$(srcdir)/test/gtestInclude.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf memtailor/.libs memtailor/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -470,76 +563,6 @@ uninstall-nobase_includeHEADERS:
 	$(am__nobase_strip_setup); files=`$(am__nobase_strip)`; \
 	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
 
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
-$(RECURSIVE_TARGETS):
-	@fail= failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
-$(RECURSIVE_CLEAN_TARGETS):
-	@fail= failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	rev=''; for subdir in $$list; do \
-	  if test "$$subdir" = "."; then :; else \
-	    rev="$$subdir $$rev"; \
-	  fi; \
-	done; \
-	rev="$$rev ."; \
-	target=`echo $@ | sed s/-recursive//`; \
-	for subdir in $$rev; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-ctags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
-	done
-
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
@@ -550,23 +573,10 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	set x; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -585,7 +595,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	  fi; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
@@ -604,6 +614,99 @@ GTAGS:
 
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
+
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list=' $(TESTS) '; \
+	$(am__tty_colors); \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=XPASS; \
+	      ;; \
+	      *) \
+		col=$$grn; res=PASS; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *[\ \	]$$tst[\ \	]*) \
+		xfail=`expr $$xfail + 1`; \
+		col=$$lgn; res=XFAIL; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		col=$$red; res=FAIL; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      col=$$blu; res=SKIP; \
+	    fi; \
+	    echo "$${col}$$res$${std}: $$tst"; \
+	  done; \
+	  if test "$$all" -eq 1; then \
+	    tests="test"; \
+	    All=""; \
+	  else \
+	    tests="tests"; \
+	    All="All "; \
+	  fi; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="$$All$$all $$tests passed"; \
+	    else \
+	      if test "$$xfail" -eq 1; then failures=failure; else failures=failures; fi; \
+	      banner="$$All$$all $$tests behaved as expected ($$xfail expected $$failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all $$tests failed"; \
+	    else \
+	      if test "$$xpass" -eq 1; then passes=pass; else passes=passes; fi; \
+	      banner="$$failed of $$all $$tests did not behave as expected ($$xpass unexpected $$passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    if test "$$skip" -eq 1; then \
+	      skipped="($$skip test was not run)"; \
+	    else \
+	      skipped="($$skip tests were not run)"; \
+	    fi; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  if test "$$failed" -eq 0; then \
+	    col="$$grn"; \
+	  else \
+	    col="$$red"; \
+	  fi; \
+	  echo "$${col}$$dashes$${std}"; \
+	  echo "$${col}$$banner$${std}"; \
+	  test -z "$$skipped" || echo "$${col}$$skipped$${std}"; \
+	  test -z "$$report" || echo "$${col}$$report$${std}"; \
+	  echo "$${col}$$dashes$${std}"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
 
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
@@ -635,34 +738,6 @@ distdir: $(DISTFILES)
 	    test -f "$(distdir)/$$file" \
 	    || cp -p $$d/$$file "$(distdir)/$$file" \
 	    || exit 1; \
-	  fi; \
-	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -d "$(distdir)/$$subdir" \
-	    || $(MKDIR_P) "$(distdir)/$$subdir" \
-	    || exit 1; \
-	  fi; \
-	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
 	  fi; \
 	done
 	-test -n "$(am__skip_mode_fix)" \
@@ -796,22 +871,23 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-check: check-recursive
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
-installdirs: installdirs-recursive
-installdirs-am:
+installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -829,105 +905,108 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f memtailor/$(DEPDIR)/$(am__dirstamp)
+	-rm -f memtailor/$(am__dirstamp)
+	-rm -f test/$(DEPDIR)/$(am__dirstamp)
+	-rm -f test/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
+	-rm -rf memtailor/$(DEPDIR) test/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
 html-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
 install-data-am: install-nobase_includeHEADERS
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-dvi-am:
 
 install-exec-am: install-libLTLIBRARIES
 
-install-html: install-html-recursive
+install-html: install-html-am
 
 install-html-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-info-am:
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
 install-pdf-am:
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
+	-rm -rf memtailor/$(DEPDIR) test/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
 uninstall-am: uninstall-libLTLIBRARIES uninstall-nobase_includeHEADERS
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) ctags-recursive \
-	install-am install-strip tags-recursive
+.MAKE: check-am install-am install-strip
 
-.PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am am--refresh check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags ctags-recursive dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-lzma dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-nobase_includeHEADERS install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-libLTLIBRARIES uninstall-nobase_includeHEADERS
+.PHONY: CTAGS GTAGS all all-am am--refresh check check-TESTS check-am \
+	clean clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool ctags dist dist-all dist-bzip2 dist-gzip \
+	dist-lzip dist-lzma dist-shar dist-tarZ dist-xz dist-zip \
+	distcheck distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man \
+	install-nobase_includeHEADERS install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-libLTLIBRARIES \
+	uninstall-nobase_includeHEADERS
 
 gtest: $(GTEST_DIR)/gtest
 $(GTEST_DIR)/gtest:

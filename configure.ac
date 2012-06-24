@@ -32,7 +32,10 @@ dnl   missing.
 dnl -Wall: set Automake to emit all warnings it can. Is NOT RELATED to setting
 dnl   warnings for other tools. For example, it wil not make the compiler
 dnl   get a -Wall option.
-AM_INIT_AUTOMAKE([foreign -Wall])
+dnl subdir-objects: Put object files in a directory structure based on
+dnl   the directory structure of the source files. This way, two source
+dnl   files with the same name in different directories do not conflict.
+AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
 
 # Set up the $(LN_S) macro, which creates symbolic links
 AC_PROG_LN_S
