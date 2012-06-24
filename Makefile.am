@@ -56,12 +56,8 @@ check_PROGRAMS=$(TESTS)
 unittest_CXXFLAGS=\
   -I$(top_srcdir)/libs/gtest/include\
   -I$(top_srcdir)/libs/gtest/\
-  -I$(top_srcdir)/src/memtailor/\
   -I$(top_srcdir)/src/
 unittest_LDFLAGS=$(top_builddir)/libmemtailor.la
-
-qbob:
-	echo $(top_builddir)/libmemtailor.la
 
 # test_LIBS=
 unittest_SOURCES=src/test/ArenaTest.cpp src/test/BufferPoolTest.cpp	\
