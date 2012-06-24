@@ -8,7 +8,7 @@ AC_CONFIG_AUX_DIR([.]) # directory for auxiliary build tools (install-sh etc)
 # check that source directory is correct
 dnl  if autoconf is told the source code is in a directory that does not
 dnl  contain this file then it knows that the directory is wrong.
-AC_CONFIG_SRCDIR([memtailor.h])
+AC_CONFIG_SRCDIR([src/memtailor.h])
 
 # Enable optional maintainer mode (off by defautl)
 dnl AM_MAINTAINER_MODE turns off automatic reconstruction of the build
@@ -58,7 +58,6 @@ LT_INIT
 dnl Set up AC_OUTPUT to create each file by copying an input file
 dnl while substituting the output variable values.
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([test/Makefile])
 
 dnl Macro that is required to be at the end of any Autoconf script.
 dnl Creates config.status and launches it.

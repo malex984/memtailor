@@ -3,8 +3,8 @@
 #ifndef MEMT_ARENA_GUARD
 #define MEMT_ARENA_GUARD
 
-#include <memtailor/MemoryBlocks.h>
-#include <memtailor/stdinc.h>
+#include "MemoryBlocks.h"
+#include "stdinc.h"
 
 #include <new>
 #include <cstddef>

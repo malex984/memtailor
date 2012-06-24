@@ -1,4 +1,3 @@
-
 /* Frobby: Software for monomial ideal computations.
    Copyright (C) 2011 University of Aarhus
    Contact Bjarke Hammersholt Roune for license information (www.broune.com)
@@ -16,10 +15,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see http://www.gnu.org/licenses/.
 */
-#include <memtailor/stdinc.h>
-#include <memtailor/Arena.h>
-#include <gtest/gtest.h>
+#include "stdinc.h"
+#include "Arena.h"
 
+#include <gtest/gtest.h>
 #include <algorithm>
 #include <sstream>
 

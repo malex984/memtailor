@@ -9,28 +9,28 @@ AM_CPPFLAGS = -I${top_srcdir}/
 # tell Libtool what the name of the library is.
 lib_LTLIBRARIES = libmemtailor.la
 
+# set the C++ compiler to include src/
+AM_CXXFLAGS=-I$(top_srcdir)/src/
+
 # the sources that are built to make libmemtailor
-libmemtailor_la_SOURCES = memtailor/BufferPool.cpp memtailor/Arena.cpp	\
-  memtailor/MemoryBlocks.cpp
+libmemtailor_la_SOURCES = src/memtailor/BufferPool.cpp		\
+  src/memtailor/Arena.cpp src/memtailor/MemoryBlocks.cpp
 
 # The headers that libmemtailor installs.
 # Normally, automake strips the path from the files when installing them,
-# so memtailor/x.h gets installed as just x.h. The nobase_ prefix
-# tells Automake to install memtailor/x.h into memtailor/x.h instead.
-nobase_include_HEADERS = memtailor.h memtailor/stdinc.h				\
-  memtailor/BufferPool.h memtailor/Arena.h memtailor/ArenaVector.h	\
-  memtailor/MemoryBlocks.h
+# so src/memtailor/x.h gets installed as just x.h.
+# install memtailor.h directly into the include directory
+include_HEADERS=src/memtailor.h
+# install remaining headers into a memtailor subdirectory of the include dir
+memtincludedir=$(includedir)/memtailor
+memtinclude_HEADERS=src/memtailor/stdinc.h src/memtailor/BufferPool.h	\
+  src/memtailor/Arena.h src/memtailor/ArenaVector.h						\
+  src/memtailor/MemoryBlocks.h
 
 # When making a distribution file, Automake knows to include all files
 # that are necessary to build the project. EXTRA_DIST specifies files
 # to include beyond those used in the build process.
 EXTRA_DIST = autogen.sh
-
-# Tell Automake to recursively run Automake files in the listed directories
-#SUBDIRS=test
-
-# I don't know what this does
-#TESTDIRS=test
 
 # allow to download gtest in case of needing to run unit tests
 GTEST_DIR = $(top_srcdir)/libs/
@@ -50,11 +50,20 @@ $(GTEST_DIR)/gtest:
 	mv $(GTEST_TMP_DIR)/gtest-$(GTEST_VERSION) $(GTEST_DIR)/gtest;
 .PHONY: gtest
 
-TESTS=test
+TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
-test_CXXFLAGS= -I$(top_srcdir)/libs/gtest/include -I$(top_srcdir)/libs/gtest/
-test_LDFLAGS= $(top_builddir)/libmemtailor.la
+unittest_CXXFLAGS=\
+  -I$(top_srcdir)/libs/gtest/include\
+  -I$(top_srcdir)/libs/gtest/\
+  -I$(top_srcdir)/src/memtailor/\
+  -I$(top_srcdir)/src/
+unittest_LDFLAGS=$(top_builddir)/libmemtailor.la
+
+qbob:
+	echo $(top_builddir)/libmemtailor.la
+
 # test_LIBS=
-test_SOURCES= test/ArenaTest.cpp test/BufferPoolTest.cpp			\
-  test/MemoryBlocksTest.cpp test/testMain.cpp test/gtestInclude.cpp
+unittest_SOURCES=src/test/ArenaTest.cpp src/test/BufferPoolTest.cpp	\
+  src/test/MemoryBlocksTest.cpp src/test/testMain.cpp				\
+  src/test/gtestInclude.cpp
