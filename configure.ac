@@ -2,15 +2,15 @@ dnl AC_INIT sets up autoconf and must be first macro.
 AC_INIT([memtailor], [1.0]) # package, version, bug-report-email
 
 # set up information about directories
-AC_CONFIG_MACRO_DIR([m4]) # directory of extra autoconf macroes
-AC_CONFIG_AUX_DIR([.]) # directory for auxiliary build tools (install-sh etc)
+AC_CONFIG_MACRO_DIR([build/autotools/m4]) # directory of extra autoconf macroes
+AC_CONFIG_AUX_DIR([build/autotools]) # directory for auxiliary build tools (install-sh etc)
 
 # check that source directory is correct
 dnl  if autoconf is told the source code is in a directory that does not
 dnl  contain this file then it knows that the directory is wrong.
 AC_CONFIG_SRCDIR([src/memtailor.h])
 
-# Enable optional maintainer mode (off by defautl)
+# Enable optional maintainer mode (off by default)
 dnl AM_MAINTAINER_MODE turns off automatic reconstruction of the build
 dnl files if the source build files have changed. A developer will want
 dnl those automatic reconstructions to happen so that changes to the
@@ -57,7 +57,7 @@ LT_INIT
 
 dnl Set up AC_OUTPUT to create each file by copying an input file
 dnl while substituting the output variable values.
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([build/autotools/Makefile])
 
 dnl Macro that is required to be at the end of any Autoconf script.
 dnl Creates config.status and launches it.

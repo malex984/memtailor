@@ -1,7 +1,6 @@
 # options passed to aclocal, which is a tool for making macroes visible to
-# autoconf. We distribute local macro definitions in m4/, so we need to
-# let aclocal know about that via -I m4.
-ACLOCAL_AMFLAGS = -I m4
+# autoconf. We use -I to tell aclocal where we put the local macros.
+ACLOCAL_AMFLAGS = -I build/autotools/m4
 
 # Options passed to the C PreProcessor (CPP), NOT the C Plus Plus compiler.
 AM_CPPFLAGS = -I${top_srcdir}/
