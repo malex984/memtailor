@@ -1,38 +1,40 @@
 # Maintainer: Oleksandr Motsak <http://goo.gl/mcpzY>
 
 pkgname=memtailor
-pkgver=20120608
+pkgver=20120709
 pkgrel=1
 pkgdesc="Custom memory manager. Has an arena allocator and a memory pool."
 arch=(i686 x86_64)
 url="http://www.broune.com/"
 license=('license.txt')
-makedepends=('automake' 'autoconf' 'mercurial')
-checkdepends=('gtest')
+makedepends=('automake' 'autoconf' 'git')
 
-_hgname="$pkgname"
-_hgroot="https://bitbucket.org/malex984/$pkgname"
+# checkdepends=('')
 
+_gitname="$pkgname"
+_gitroot="https://github.com/malex984/$pkgname.git"
+_gitbranch="new_plus_old_history"
 build()
 {
 	cd "$srcdir"
-	msg "Connecting to mercurial server…"
+	msg "Connecting to git server…"
 
-	if [ -d "$srcdir/$_hgname" ]
+	if [ -d "$srcdir/$_gitname" ]
 	then
-		cd $_hgname && hg pull && cd ..
+		cd $_gitname && git pull && cd ..
 	else
-		hg clone $_hgroot
+		git clone -b $_gitbranch $_gitroot
 	fi
 	
 	# setup
-	"./$_hgname/autogen.sh"
+	# NOTE: downloads gtest into the source directory (libs/)
+	"./$_gitname/autogen.sh"
 	
 	mkdir -p "BUILD"
 	
 	msg "Starting (out-of-source-tree) build..."
 	
-	cd "BUILD" && ../$_hgname/configure --prefix=/usr && make && cd ..
+	cd "BUILD" && ../$_gitname/configure --prefix=/usr && make && cd ..
 }
 
 
