@@ -41,7 +41,7 @@ unittest_CXXFLAGS=\
   -I$(top_srcdir)/libs/gtest/include\
   -I$(top_srcdir)/libs/gtest/\
   -I$(top_srcdir)/src/
-unittest_LDFLAGS = $(top_builddir)/libmemtailor-$(MEMTAILOR_API_VERSION).la
+unittest_LDFLAGS = $(top_builddir)/libmemtailor-$(MEMTAILOR_API_VERSION).la -lpthread
 
 # test_LIBS=
 unittest_SOURCES=src/test/ArenaTest.cpp src/test/BufferPoolTest.cpp	\
